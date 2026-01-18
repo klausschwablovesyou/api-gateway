@@ -1,0 +1,8 @@
+<div *ngIf="isProgressVisible" class="progress-overlay">
+  <nb-card class="progress-card">
+    <nb-card-header>{{ progressText | translate }}</nb-card-header>
+    <nb-card-body>
+      <nb-spinner></nb-spinner>
+    </nb-card-body>
+  </nb-card>
+</div>

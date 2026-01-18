@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: telegrambot-backend
+    environment:
+      # Server Configuration
+      PORT: ${PORT}
+      SERVER_PORT: ${SERVER_PORT}
+      DENO_ENV: ${DENO_ENV}
+
+      # Database Configuration
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_POOL_SIZE: ${DB_POOL_SIZE}
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - ./backend/logs:/app/backend/logs
+    restart: unless-stopped
+    labels:
+      # Coolify will handle HTTPS with its built-in reverse proxy
+      - "coolify.managed=true"
+    stdin_open: true
+    tty: true
+    networks:
+      - default
+
+networks:
+  default:
+    external: true
+    name: coolify

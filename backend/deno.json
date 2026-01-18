@@ -1,0 +1,34 @@
+{
+  "name": "@telegrambot/backend",
+  "version": "1.0.0",
+  "exports": "./main.ts",
+  "tasks": {
+    "start": "deno run -A --unstable-cron main.ts",
+    "dev": "deno run -A --unstable-cron --watch main.ts",
+    "dev:debug": "deno run -A --unstable-cron --watch --inspect main.ts",
+    "kill": "deno run -A kill-app.ts",
+    "install": "deno cache main.ts",
+    "install:client": "cd ../client && npm install"
+  },
+  "imports": {
+    "@danet/core": "jsr:@danet/core@^2.9.6",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.0",
+    "@std/encoding": "jsr:@std/encoding",
+    "@cross/jwt": "jsr:@cross/jwt",
+    "@denorid/reflection": "jsr:@denorid/reflection",
+    "@db/postgres": "jsr:@db/postgres",
+    "bcrypt": "jsr:@da/bcrypt",
+    "@backend/": "./src/",
+    "@shared/": "../shared/",
+    "@shared/models/user.model": "../shared/models/user.model.ts",
+    "@shared/types/user-role": "../shared/types/user-role.ts",
+    "@shared/types/jwt-payload": "../shared/types/jwt-payload.ts",
+    "@shared/types/telegram-verification-state": "../shared/types/telegram-verification-state.ts",
+    "@shared/types/realtime-topic": "../shared/types/realtime-topic.ts",
+    "@shared/types/http-status-code": "./src/shared/types/http-status-code.ts"
+  },
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}

@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+backend/logs/
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Deno
+deno.lock
+
+# Database
+*.db
+*.sqlite
+postgres_data/
+
+# Node modules (if any)
+node_modules/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation
+README.md
+*.md
+
+# SQL scripts
+*.sql

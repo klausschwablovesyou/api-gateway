@@ -1,0 +1,23 @@
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Deno
+deno.lock
+
+# Database
+*.db
+*.sqlite

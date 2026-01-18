@@ -1,0 +1,21 @@
+
+{
+  "name": "@api/gatewaz/monorepo",
+  "version": "1.0.0",
+  "exports": "./backend/main.ts",
+  "tasks": {
+    "install": "deno task install:backend && deno task install:client",
+    "install:backend": "cd backend && deno cache main.ts",
+    "install:client": "cd client && npm install",
+    "dev": "deno task dev:backend & deno task dev:client",
+    "dev:debug": "deno task dev:backend:debug & deno task dev:client",
+    "dev:backend": "cd backend && deno task dev",
+    "dev:backend:debug": "cd backend && deno task dev:debug",
+    "dev:client": "cd client && npm start",
+    "dev:production:debug": "deno task dev:backend & cd client && npm run start:production:debug",
+    "build": "deno task build:backend && deno task build:client",
+    "build:backend": "cd backend && deno cache main.ts",
+    "build:client": "cd client && npm run build",
+    "start": "cd backend && deno task start"
+  }
+}

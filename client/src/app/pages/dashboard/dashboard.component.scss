@@ -1,0 +1,21 @@
+.dashboard-container {
+  padding: 1rem;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+  }
+}
+
+nb-card {
+  h3 {
+    @media (max-width: 576px) {
+      font-size: 1.25rem;
+    }
+  }
+
+  p {
+    @media (max-width: 576px) {
+      font-size: 0.9rem;
+    }
+  }
+}

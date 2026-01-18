@@ -1,0 +1,48 @@
+<nb-card>
+  <nb-card-header>
+    <h5>{{ 'Admin.Memory.Title' | translate }}</h5>
+  </nb-card-header>
+  <nb-card-body>
+    @if (isLoading()) {
+      <div class="loading-container">
+        <nb-spinner status="primary"></nb-spinner>
+        <span>{{ 'Admin.Memory.WaitingForData' | translate }}</span>
+      </div>
+    } @else if (memoryData()) {
+      <div class="memory-stats">
+        <app-memory-stat
+          icon="hard-drive-outline"
+          [label]="'Admin.Memory.Backend' | translate"
+          [value]="formatBytes(memoryData()!.backend.heapUsed) + ' / ' + formatBytes(memoryData()!.backend.heapTotal)"
+          [percentage]="heapPercentage()"
+          [status]="getStatus(heapPercentage())"
+          [details]="['RSS: ' + formatBytes(memoryData()!.backend.rss), 'External: ' + formatBytes(memoryData()!.backend.external)]">
+        </app-memory-stat>
+
+        <app-memory-stat
+          icon="paper-plane-outline"
+          [label]="'Admin.Memory.Telegram' | translate"
+          [value]="memoryData()!.telegram.count + ' ' + ('Admin.Memory.Clients' | translate) + ' (~' + formatBytes(memoryData()!.telegram.estimated) + ')'"
+          [percentage]="getPercentage(memoryData()!.telegram.estimated, memoryData()!.backend.rss)"
+          status="info">
+        </app-memory-stat>
+
+        <app-memory-stat
+          icon="flash-outline"
+          [label]="'Admin.Memory.Realtime' | translate"
+          [value]="memoryData()!.realtime.count + ' ' + ('Admin.Memory.Connections' | translate) + ' (~' + formatBytes(memoryData()!.realtime.estimated) + ')'"
+          [percentage]="getPercentage(memoryData()!.realtime.estimated, memoryData()!.backend.rss)"
+          status="primary">
+        </app-memory-stat>
+
+        <app-memory-stat
+          icon="layers-outline"
+          [label]="'Admin.Memory.Database' | translate"
+          [value]="memoryData()!.database.count + ' ' + ('Admin.Memory.Connections' | translate) + ' (~' + formatBytes(memoryData()!.database.estimated) + ')'"
+          [percentage]="getPercentage(memoryData()!.database.estimated, memoryData()!.backend.rss)"
+          status="warning">
+        </app-memory-stat>
+      </div>
+    }
+  </nb-card-body>
+</nb-card>

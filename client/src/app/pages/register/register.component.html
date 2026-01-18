@@ -1,0 +1,93 @@
+<nb-layout>
+  <nb-layout-column>
+    <div class="auth-container">
+      <nb-card>
+    <nb-card-header>
+      <h3>{{ 'Auth.Register.Title' | translate }}</h3>
+    </nb-card-header>
+    <nb-card-body>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="username" class="label">{{ 'Auth.Register.Username' | translate }}</label>
+          <input nbInput
+                 fullWidth
+                 type="text"
+                 id="username"
+                 formControlName="username"
+                 [placeholder]="'Auth.Register.UsernamePlaceholder' | translate"
+                 [status]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched ? 'danger' : 'basic'">
+          <div class="error-message" *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+            <span *ngIf="registerForm.get('username')?.errors?.['required']">{{ 'Auth.Register.UsernameRequired' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="label">{{ 'Auth.Register.Email' | translate }}</label>
+          <input nbInput
+                 fullWidth
+                 type="email"
+                 id="email"
+                 formControlName="email"
+                 [placeholder]="'Auth.Register.EmailPlaceholder' | translate"
+                 [status]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched ? 'danger' : 'basic'">
+          <div class="error-message" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+            <span *ngIf="registerForm.get('email')?.errors?.['required']">{{ 'Auth.Register.EmailRequired' | translate }}</span>
+            <span *ngIf="registerForm.get('email')?.errors?.['email']">{{ 'Auth.Register.EmailInvalid' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="label">{{ 'Auth.Register.Password' | translate }}</label>
+          <input nbInput
+                 fullWidth
+                 type="password"
+                 id="password"
+                 formControlName="password"
+                 [placeholder]="'Auth.Register.PasswordPlaceholder' | translate"
+                 [status]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched ? 'danger' : 'basic'">
+          @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+            @for (error of registerForm.get('password')?.errors | keyvalue; track error.key) {
+              @if (pwValidationMessages[error.key]) {
+                <div class="error-message">{{ 'Auth.Validation.' + pwValidationMessages[error.key] | translate }}</div>
+              }
+            }
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword" class="label">{{ 'Auth.Register.ConfirmPassword' | translate }}</label>
+          <input nbInput
+                 fullWidth
+                 type="password"
+                 id="confirmPassword"
+                 formControlName="confirmPassword"
+                 [placeholder]="'Auth.Register.ConfirmPasswordPlaceholder' | translate"
+                 [status]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched ? 'danger' : 'basic'">
+          <div class="error-message" *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+            <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">{{ 'Auth.Register.ConfirmPasswordRequired' | translate }}</span>
+          </div>
+          <div class="error-message" *ngIf="registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched">
+            <span>{{ 'Auth.Register.PasswordMismatch' | translate }}</span>
+          </div>
+        </div>
+
+        <button nbButton
+                fullWidth
+                status="primary"
+                type="submit"
+                [disabled]="registerForm.invalid">
+          <nb-icon icon="person-add-outline"></nb-icon>
+          {{ 'Auth.Register.Submit' | translate }}
+        </button>
+      </form>
+    </nb-card-body>
+    <nb-card-footer>
+      <p class="text-center">
+        {{ 'Auth.Register.HaveAccount' | translate }}
+        <a href="#" (click)="navigateToLogin(); $event.preventDefault()">{{ 'Auth.Register.LoginLink' | translate }}</a>
+      </p>
+    </nb-card-footer>
+      </nb-card>
+    </div>
+  </nb-layout-column>
+</nb-layout>

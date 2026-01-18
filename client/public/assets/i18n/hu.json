@@ -1,0 +1,128 @@
+{
+  "App": {
+    "Title": "Telegram Token Gyűjtő"
+  },
+  "Menu": {
+    "Dashboard": "Vezérlőpult",
+    "BotControl": "Bot Vezérlés",
+    "Logout": "Kijelentkezés",
+    "Admin": {
+      "Title": "Admin",
+      "MemoryUsage": "Memóriahasználat"
+    }
+  },
+  "Auth": {
+    "Validation": {
+      "PasswordRequired": "A jelszó megadása kötelező",
+      "PasswordTooShort": "A jelszónak legalább 6 karakter hosszúnak kell lennie",
+      "PasswordNeedsLowercase": "A jelszónak tartalmaznia kell legalább egy kisbetűt",
+      "PasswordNeedsUppercase": "A jelszónak tartalmaznia kell legalább egy nagybetűt",
+      "PasswordNeedsNumber": "A jelszónak tartalmaznia kell legalább egy számot",
+      "PasswordNeedsSpecialChar": "A jelszónak tartalmaznia kell legalább egy speciális karaktert"
+    },
+    "Error": {
+      "InvalidCredentials": "Érvénytelen felhasználónév vagy jelszó",
+      "UsernameExists": "Ez a felhasználónév már használatban van",
+      "EmailExists": "Ez az e-mail cím már használatban van"
+    },
+    "Login": {
+      "Title": "Bejelentkezés",
+      "Username": "Felhasználónév",
+      "UsernamePlaceholder": "Adja meg a felhasználónevét",
+      "UsernameRequired": "A felhasználónév megadása kötelező",
+      "Password": "Jelszó",
+      "PasswordPlaceholder": "Adja meg a jelszavát",
+      "PasswordRequired": "A jelszó megadása kötelező",
+      "PasswordMinLength": "A jelszónak legalább 6 karakter hosszúnak kell lennie",
+      "Submit": "Bejelentkezés",
+      "NoAccount": "Még nincs fiókja?",
+      "RegisterLink": "Regisztráljon itt"
+    },
+    "Register": {
+      "Title": "Regisztráció",
+      "Success": "Sikeres regisztráció! Kérjük, jelentkezzen be.",
+      "Username": "Felhasználónév",
+      "UsernamePlaceholder": "Válasszon egy felhasználónevet",
+      "UsernameRequired": "A felhasználónév megadása kötelező",
+      "Email": "E-mail cím",
+      "EmailPlaceholder": "Adja meg az e-mail címét",
+      "EmailRequired": "Az e-mail cím megadása kötelező",
+      "EmailInvalid": "Érvénytelen e-mail cím",
+      "Password": "Jelszó",
+      "PasswordPlaceholder": "Válasszon egy jelszót",
+      "PasswordRequired": "A jelszó megadása kötelező",
+      "PasswordMinLength": "A jelszónak legalább 6 karakter hosszúnak kell lennie",
+      "ConfirmPassword": "Jelszó megerősítése",
+      "ConfirmPasswordPlaceholder": "Erősítse meg a jelszavát",
+      "ConfirmPasswordRequired": "A jelszó megerősítése kötelező",
+      "PasswordMismatch": "A jelszavak nem egyeznek",
+      "Submit": "Regisztráció",
+      "HaveAccount": "Már van fiókja?",
+      "LoginLink": "Jelentkezzen be itt"
+    }
+  },
+  "Dashboard": {
+    "Title": "Vezérlőpult",
+    "Welcome": "Üdvözöljük a Telegram Token Gyűjtő alkalmazásban!"
+  },
+  "Bot": {
+    "Title": "Bot Vezérlés",
+    "Description": "Indítsa el vagy állítsa le a Telegram botot",
+    "Start": "Bot Indítása",
+    "Stop": "Bot Leállítása",
+    "Verification": {
+      "Idle": "A bot tétlen",
+      "Starting": "A bot indítása...",
+      "WaitingForQrScan": "Olvassa be a QR-kódot a Telegram alkalmazással",
+      "Connected": "A bot csatlakoztatva",
+      "Failed": "A csatlakozás sikertelen",
+      "AlreadyRunning": "A bot már fut",
+      "NotRunning": "A bot nem fut",
+      "Stopped": "A bot leállítva"
+    },
+    "QrCode": {
+      "Instructions": "Nyissa meg a Telegramot a telefonján, menjen a Beállítások → Eszközök → Asztali eszköz csatlakoztatása menüpontba, és olvassa be ezt a QR-kódot."
+    },
+    "Settings": {
+      "Title": "Bot Beállítások",
+      "TelegramApiId": "Telegram API azonosító",
+      "TelegramApiIdPlaceholder": "Adja meg a Telegram API azonosítót",
+      "TelegramApiHash": "Telegram API Hash",
+      "TelegramApiHashPlaceholder": "Adja meg a Telegram API Hash-t",
+      "Save": "Beállítások mentése",
+      "Reset": "Beállítások törlése",
+      "LoadingSettings": "Beállítások betöltése...",
+      "SaveSuccess": "Beállítások sikeresen mentve",
+      "SaveError": "A beállítások mentése sikertelen"
+    }
+  },
+  "Common": {
+    "Loading": "Betöltés...",
+    "Error": "Hiba",
+    "Success": "Sikeres",
+    "Cancel": "Mégse",
+    "Submit": "Küldés"
+  },
+  "Detections": {
+    "Title": "Solana Észlelések",
+    "Empty": "Nincs találat",
+    "Columns": {
+      "Address": "Cím",
+      "Channel": "Csatorna",
+      "Message": "Üzenet",
+      "DetectedAt": "Észlelve"
+    }
+  },
+  "Admin": {
+    "Memory": {
+      "Title": "Memóriahasználat",
+      "WaitingForData": "Várakozás az adatokra...",
+      "Backend": "Backend Folyamat",
+      "Telegram": "Telegram Kliensek",
+      "Realtime": "Valós idejű Kapcsolatok",
+      "Database": "Adatbázis Kapcsolatok",
+      "Clients": "kliens",
+      "Connections": "kapcsolat"
+    }
+  }
+}

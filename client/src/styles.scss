@@ -1,0 +1,40 @@
+/* You can add global styles to this file, and also import other style files */
+
+@use 'themes' as *;
+@use '@nebular/theme/styles/globals' as *;
+
+@include nb-install() {
+  @include nb-theme-global();
+};
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: auto;
+}
+
+// Mobile viewport fix
+@media (max-width: 576px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+// Ensure proper responsive behavior
+* {
+  box-sizing: border-box;
+}
+
+// Make images and videos responsive
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+// Prevent iOS Safari zoom on input focus (requires 16px minimum)
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}

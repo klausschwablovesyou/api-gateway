@@ -1,0 +1,19 @@
+<div class="stat-section">
+  <div class="stat-header">
+    <nb-icon [icon]="icon"></nb-icon>
+    <span class="stat-label">{{ label }}</span>
+    <span class="stat-value">{{ value }}</span>
+  </div>
+  <nb-progress-bar
+    [value]="percentage"
+    [status]="status"
+    [displayValue]="true">
+  </nb-progress-bar>
+  @if (details.length > 0) {
+    <div class="stat-details">
+      @for (detail of details; track detail) {
+        <span>{{ detail }}</span>
+      }
+    </div>
+  }
+</div>

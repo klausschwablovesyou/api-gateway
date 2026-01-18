@@ -1,0 +1,22 @@
+<nb-layout>
+  <nb-layout-header fixed>
+    <div class="header-container">
+      <button nbButton ghost (click)="toggleSidebar()" class="sidebar-toggle">
+        <nb-icon icon="menu-outline"></nb-icon>
+      </button>
+      <div class="logo">
+        {{ 'App.Title' | translate }}
+      </div>
+    </div>
+  </nb-layout-header>
+
+  <nb-sidebar responsive tag="menu-sidebar">
+    <nb-menu [items]="menuItems"></nb-menu>
+  </nb-sidebar>
+
+  <nb-layout-column (click)="onContentClick()">
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </nb-layout-column>
+</nb-layout>

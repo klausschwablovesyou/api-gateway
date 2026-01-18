@@ -1,0 +1,206 @@
+:host {
+  display: block;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-hint-color);
+  font-size: 1.1rem;
+}
+
+.detections-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+
+  thead {
+    th {
+      padding: 1rem 1.25rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--text-hint-color);
+      border-bottom: 2px solid var(--border-basic-color-3);
+      background: var(--background-basic-color-2);
+      text-align: left;
+    }
+  }
+
+  tbody {
+    .detection-row {
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: rgba(var(--color-primary-default-rgb, 64, 169, 255), 0.08);
+      }
+
+      td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border-basic-color-3);
+        vertical-align: middle;
+      }
+    }
+
+    .detail-row {
+      background-color: var(--background-basic-color-2);
+
+      td {
+        padding: 0;
+        border-bottom: 0 solid var(--border-basic-color-3);
+        transition: border-bottom-width 200ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .detail-content {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 200ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      &.expanded {
+        td {
+          border-bottom-width: 2px;
+        }
+
+        .detail-content {
+          grid-template-rows: 1fr;
+        }
+      }
+    }
+  }
+}
+
+.address-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  nb-icon {
+    color: var(--text-hint-color);
+    font-size: 1.2rem;
+    transition: color 0.2s ease;
+  }
+
+  &:hover nb-icon {
+    color: var(--color-primary-default);
+  }
+}
+
+.address-link {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  background: linear-gradient(135deg, var(--background-basic-color-3) 0%, var(--background-basic-color-4) 100%);
+  border: 1px solid var(--border-basic-color-3);
+  border-radius: 6px;
+  color: var(--color-primary-default);
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background: var(--color-primary-default);
+    border-color: var(--color-primary-default);
+    color: var(--text-control-color);
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(var(--color-primary-default-rgb, 64, 169, 255), 0.4);
+    transform: translateY(-1px);
+  }
+}
+
+.channel-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-basic-color);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--color-primary-default);
+    background: rgba(var(--color-primary-default-rgb, 64, 169, 255), 0.1);
+    text-decoration: none;
+  }
+
+  &::before {
+    content: '@';
+    color: var(--color-info-default);
+    font-weight: 400;
+  }
+}
+
+.channel-name {
+  color: var(--text-hint-color);
+  font-style: italic;
+}
+
+.detail-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.detail-padding {
+  padding: 1rem 1.25rem 1rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.detail-label {
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-hint-color);
+  min-width: 90px;
+  flex-shrink: 0;
+  padding-top: 0.15rem;
+}
+
+.detail-value {
+  color: var(--text-basic-color);
+  line-height: 1.6;
+  word-break: break-word;
+  flex: 1;
+}
+
+.message-link {
+  color: var(--text-basic-color);
+  text-decoration: none;
+  background: linear-gradient(to bottom, transparent 60%, rgba(var(--color-primary-default-rgb, 64, 169, 255), 0.2) 60%);
+  transition: all 0.2s ease;
+  padding: 0 2px;
+
+  &:hover {
+    color: var(--color-primary-default);
+    background: linear-gradient(to bottom, transparent 60%, rgba(var(--color-primary-default-rgb, 64, 169, 255), 0.4) 60%);
+    text-decoration: none;
+  }
+}
+
+.timestamp {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8rem;
+  color: var(--text-hint-color);
+  padding: 0.2rem 0.5rem;
+  background: var(--background-basic-color-3);
+  border-radius: 4px;
+}

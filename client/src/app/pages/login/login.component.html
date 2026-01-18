@@ -1,0 +1,58 @@
+<nb-layout>
+  <nb-layout-column>
+    <div class="auth-container">
+      <nb-card>
+        <nb-card-header>
+          <h3>{{ 'Auth.Login.Title' | translate }}</h3>
+        </nb-card-header>
+        <nb-card-body>
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+              <label for="username" class="label">{{ 'Auth.Login.Username' | translate }}</label>
+              <input nbInput
+                     fullWidth
+                     type="text"
+                     id="username"
+                     formControlName="username"
+                     [placeholder]="'Auth.Login.UsernamePlaceholder' | translate"
+                     [status]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched ? 'danger' : 'basic'">
+              <div class="error-message" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+                <span *ngIf="loginForm.get('username')?.errors?.['required']">{{ 'Auth.Login.UsernameRequired' | translate }}</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="password" class="label">{{ 'Auth.Login.Password' | translate }}</label>
+              <input nbInput
+                     fullWidth
+                     type="password"
+                     id="password"
+                     formControlName="password"
+                     [placeholder]="'Auth.Login.PasswordPlaceholder' | translate"
+                     [status]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched ? 'danger' : 'basic'">
+              <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                <span *ngIf="loginForm.get('password')?.errors?.['required']">{{ 'Auth.Login.PasswordRequired' | translate }}</span>
+                <span *ngIf="loginForm.get('password')?.errors?.['minlength']">{{ 'Auth.Login.PasswordMinLength' | translate }}</span>
+              </div>
+            </div>
+
+            <button nbButton
+                    fullWidth
+                    status="primary"
+                    type="submit"
+                    [disabled]="loginForm.invalid">
+              <nb-icon icon="log-in-outline"></nb-icon>
+              {{ 'Auth.Login.Submit' | translate }}
+            </button>
+          </form>
+        </nb-card-body>
+        <nb-card-footer>
+          <p class="text-center">
+            {{ 'Auth.Login.NoAccount' | translate }}
+            <a href="#" (click)="navigateToRegister(); $event.preventDefault()">{{ 'Auth.Login.RegisterLink' | translate }}</a>
+          </p>
+        </nb-card-footer>
+      </nb-card>
+    </div>
+  </nb-layout-column>
+</nb-layout>

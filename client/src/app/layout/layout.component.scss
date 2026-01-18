@@ -1,0 +1,46 @@
+.header-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 1rem;
+
+  .sidebar-toggle {
+    margin-right: 1rem;
+
+    @media (min-width: 1200px) {
+      display: none;
+    }
+  }
+
+  .logo {
+    font-size: 1.25rem;
+    font-weight: 600;
+
+    @media (max-width: 576px) {
+      font-size: 1rem;
+    }
+  }
+}
+
+.content-wrapper {
+  padding: 1rem;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+  }
+}
+
+// Smooth sidebar animation
+:host ::ng-deep {
+  nb-sidebar {
+    transition: width 0.3s ease, transform 0.3s ease;
+
+    &.collapsed {
+      transition: width 0.3s ease, transform 0.3s ease;
+    }
+  }
+
+  nb-layout-column {
+    transition: margin-left 0.3s ease, padding-left 0.3s ease;
+  }
+}

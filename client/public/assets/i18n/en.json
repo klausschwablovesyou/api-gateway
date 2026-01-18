@@ -1,0 +1,128 @@
+{
+  "App": {
+    "Title": "Telegram Token Harvester"
+  },
+  "Menu": {
+    "Dashboard": "Dashboard",
+    "BotControl": "Bot Control",
+    "Logout": "Logout",
+    "Admin": {
+      "Title": "Admin",
+      "MemoryUsage": "Memory Usage"
+    }
+  },
+  "Auth": {
+    "Validation": {
+      "PasswordRequired": "Password is required",
+      "PasswordTooShort": "Password must be at least 6 characters long",
+      "PasswordNeedsLowercase": "Password must contain at least one lowercase letter",
+      "PasswordNeedsUppercase": "Password must contain at least one uppercase letter",
+      "PasswordNeedsNumber": "Password must contain at least one number",
+      "PasswordNeedsSpecialChar": "Password must contain at least one special character"
+    },
+    "Error": {
+      "InvalidCredentials": "Invalid username or password",
+      "UsernameExists": "This username is already taken",
+      "EmailExists": "This email address is already in use"
+    },
+    "Login": {
+      "Title": "Login",
+      "Username": "Username",
+      "UsernamePlaceholder": "Enter your username",
+      "UsernameRequired": "Username is required",
+      "Password": "Password",
+      "PasswordPlaceholder": "Enter your password",
+      "PasswordRequired": "Password is required",
+      "PasswordMinLength": "Password must be at least 6 characters long",
+      "Submit": "Login",
+      "NoAccount": "Don't have an account?",
+      "RegisterLink": "Register here"
+    },
+    "Register": {
+      "Title": "Register",
+      "Success": "Registration successful! Please login.",
+      "Username": "Username",
+      "UsernamePlaceholder": "Choose a username",
+      "UsernameRequired": "Username is required",
+      "Email": "Email",
+      "EmailPlaceholder": "Enter your email address",
+      "EmailRequired": "Email is required",
+      "EmailInvalid": "Invalid email address",
+      "Password": "Password",
+      "PasswordPlaceholder": "Choose a password",
+      "PasswordRequired": "Password is required",
+      "PasswordMinLength": "Password must be at least 6 characters long",
+      "ConfirmPassword": "Confirm Password",
+      "ConfirmPasswordPlaceholder": "Confirm your password",
+      "ConfirmPasswordRequired": "Password confirmation is required",
+      "PasswordMismatch": "Passwords do not match",
+      "Submit": "Register",
+      "HaveAccount": "Already have an account?",
+      "LoginLink": "Login here"
+    }
+  },
+  "Dashboard": {
+    "Title": "Dashboard",
+    "Welcome": "Welcome to the Telegram Token Harvester!"
+  },
+  "Bot": {
+    "Title": "Bot Control",
+    "Description": "Start or stop the Telegram bot",
+    "Start": "Start Bot",
+    "Stop": "Stop Bot",
+    "Verification": {
+      "Idle": "Bot is idle",
+      "Starting": "Bot is starting...",
+      "WaitingForQrScan": "Scan the QR code with your Telegram app",
+      "Connected": "Bot is connected",
+      "Failed": "Connection failed",
+      "AlreadyRunning": "Bot is already running",
+      "NotRunning": "Bot is not running",
+      "Stopped": "Bot stopped"
+    },
+    "QrCode": {
+      "Instructions": "Open Telegram on your phone, go to Settings → Devices → Link Desktop Device, and scan this QR code."
+    },
+    "Settings": {
+      "Title": "Bot Settings",
+      "TelegramApiId": "Telegram API ID",
+      "TelegramApiIdPlaceholder": "Enter your Telegram API ID",
+      "TelegramApiHash": "Telegram API Hash",
+      "TelegramApiHashPlaceholder": "Enter your Telegram API Hash",
+      "Save": "Save Settings",
+      "Reset": "Reset Settings",
+      "LoadingSettings": "Loading settings...",
+      "SaveSuccess": "Settings saved successfully",
+      "SaveError": "Failed to save settings"
+    }
+  },
+  "Common": {
+    "Loading": "Loading...",
+    "Error": "Error",
+    "Success": "Success",
+    "Cancel": "Cancel",
+    "Submit": "Submit"
+  },
+  "Detections": {
+    "Title": "Solana Detections",
+    "Empty": "No detections found",
+    "Columns": {
+      "Address": "Address",
+      "Channel": "Channel",
+      "Message": "Message",
+      "DetectedAt": "Detected At"
+    }
+  },
+  "Admin": {
+    "Memory": {
+      "Title": "Memory Usage",
+      "WaitingForData": "Waiting for data...",
+      "Backend": "Backend Process",
+      "Telegram": "Telegram Clients",
+      "Realtime": "Realtime Connections",
+      "Database": "Database Connections",
+      "Clients": "clients",
+      "Connections": "connections"
+    }
+  }
+}
