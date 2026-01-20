@@ -1,0 +1,66 @@
+<nb-card>
+  <nb-card-header>
+    <div class="header-container">
+      <h5>{{ 'ApiManager.Title' | translate }}</h5>
+      <button nbButton status="primary" size="small" (click)="onAdd()">
+        <nb-icon icon="plus-outline"></nb-icon>
+        {{ 'ApiManager.Add' | translate }}
+      </button>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{{ 'ApiManager.Columns.Name' | translate }}</th>
+          <th>{{ 'ApiManager.Columns.Url' | translate }}</th>
+          <th>{{ 'ApiManager.Columns.Method' | translate }}</th>
+          <th>{{ 'ApiManager.Columns.RequestLimit' | translate }}</th>
+          <th>{{ 'ApiManager.Columns.Keys' | translate }}</th>
+          <th>{{ 'ApiManager.Columns.Code' | translate }}</th>
+          <th>{{ 'ApiManager.Columns.Actions' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let api of apis">
+          <td>{{ api.name }}</td>
+          <td>{{ api.apiUrl }}</td>
+          <td>{{ api.method }}</td>
+          <td>{{ api.requestLimit }} / {{ api.requestLimitUnit }}</td>
+          <td class="keys">
+            <button nbButton ghost size="small"
+                    [nbTooltip]="'ApiManager.Columns.CopyPublicKey' | translate"
+                    (click)="copyToClipboard(api.publicKey)">
+              <nb-icon icon="copy-outline"></nb-icon>
+              {{ 'ApiManager.Form.PublicKey' | translate }}
+            </button>
+            <button nbButton ghost size="small"
+                    *ngIf="api.privateKey"
+                    [nbTooltip]="'ApiManager.Columns.CopyPrivateKey' | translate"
+                    (click)="copyToClipboard(api.privateKey)">
+              <nb-icon icon="copy-outline"></nb-icon>
+              {{ 'ApiManager.Form.PrivateKey' | translate }}
+            </button>
+          </td>
+          <td>
+            <button nbButton ghost status="info" size="small" (click)="onShowCodeExample(api)">
+              <nb-icon icon="code-outline"></nb-icon>
+              {{ 'ApiManager.Columns.CodeExample' | translate }}
+            </button>
+          </td>
+          <td class="actions">
+            <button nbButton ghost status="primary" size="small" (click)="onEdit(api)">
+              <nb-icon icon="edit-outline"></nb-icon>
+            </button>
+            <button nbButton ghost status="danger" size="small" (click)="onDelete(api)">
+              <nb-icon icon="trash-2-outline"></nb-icon>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="apis.length === 0">
+          <td colspan="7" class="text-center">{{ 'ApiManager.NoData' | translate }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </nb-card-body>
+</nb-card>

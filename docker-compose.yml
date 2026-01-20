@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: telegrambot-backend
+    container_name: api-gateway-backend
     environment:
       # Server Configuration
       PORT: ${PORT}

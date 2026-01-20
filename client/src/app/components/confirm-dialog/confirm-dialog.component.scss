@@ -1,0 +1,14 @@
+nb-card {
+  min-width: 300px;
+  max-width: 450px;
+}
+
+p {
+  margin: 0;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

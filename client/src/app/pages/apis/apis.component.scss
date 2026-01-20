@@ -1,0 +1,32 @@
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h5 {
+    margin: 0;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-basic-color-3);
+  }
+
+  th {
+    font-weight: 600;
+  }
+
+  .actions {
+    white-space: nowrap;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+}

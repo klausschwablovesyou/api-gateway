@@ -1,0 +1,78 @@
+<nb-card>
+  <nb-card-header>
+    <h5>{{ (isEditMode ? 'ApiManager.Edit' : 'ApiManager.Create') | translate }}</h5>
+  </nb-card-header>
+  <nb-card-body>
+    <form [formGroup]="form">
+      <div class="form-group">
+        <label class="label">{{ 'ApiManager.Form.Name' | translate }}</label>
+        <input nbInput
+               fullWidth
+               formControlName="name"
+               [placeholder]="'ApiManager.Form.NamePlaceholder' | translate"
+               [status]="form.get('name')?.invalid && form.get('name')?.touched ? 'danger' : 'basic'">
+        <div class="error-message" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+          <span *ngIf="form.get('name')?.errors?.['required']">{{ 'ApiManager.Form.NameRequired' | translate }}</span>
+          <span *ngIf="form.get('name')?.errors?.['minlength']">{{ 'ApiManager.Form.NameMinLength' | translate }}</span>
+          <span *ngIf="form.get('name')?.errors?.['maxlength']">{{ 'ApiManager.Form.NameMaxLength' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group form-group-grow">
+          <label class="label">{{ 'ApiManager.Form.Url' | translate }}</label>
+          <input nbInput
+                 fullWidth
+                 formControlName="apiUrl"
+                 [placeholder]="'ApiManager.Form.UrlPlaceholder' | translate"
+                 [status]="form.get('apiUrl')?.invalid && form.get('apiUrl')?.touched ? 'danger' : 'basic'">
+          <div class="error-message" *ngIf="form.get('apiUrl')?.invalid && form.get('apiUrl')?.touched">
+            <span *ngIf="form.get('apiUrl')?.errors?.['required']">{{ 'ApiManager.Form.UrlRequired' | translate }}</span>
+            <span *ngIf="form.get('apiUrl')?.errors?.['pattern']">{{ 'ApiManager.Form.UrlInvalid' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="label">{{ 'ApiManager.Form.Method' | translate }}</label>
+          <nb-select fullWidth formControlName="method">
+            <nb-option *ngFor="let method of httpMethods" [value]="method">{{ method }}</nb-option>
+          </nb-select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="label">{{ 'ApiManager.Form.RequestLimit' | translate }}</label>
+          <input nbInput
+                 fullWidth
+                 type="number"
+                 formControlName="requestLimit"
+                 [placeholder]="'ApiManager.Form.RequestLimitPlaceholder' | translate"
+                 [status]="form.get('requestLimit')?.invalid && form.get('requestLimit')?.touched ? 'danger' : 'basic'">
+          <div class="error-message" *ngIf="form.get('requestLimit')?.invalid && form.get('requestLimit')?.touched">
+            <span *ngIf="form.get('requestLimit')?.errors?.['required']">{{ 'ApiManager.Form.RequestLimitRequired' | translate }}</span>
+            <span *ngIf="form.get('requestLimit')?.errors?.['min']">{{ 'ApiManager.Form.RequestLimitMin' | translate }}</span>
+            <span *ngIf="form.get('requestLimit')?.errors?.['max']">{{ 'ApiManager.Form.RequestLimitMax' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="label">{{ 'ApiManager.Form.RequestLimitUnit' | translate }}</label>
+          <nb-select fullWidth formControlName="requestLimitUnit">
+            <nb-option *ngFor="let unit of requestLimitUnits" [value]="unit">{{ unit }}</nb-option>
+          </nb-select>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+  <nb-card-footer>
+    <div class="button-group">
+      <button nbButton status="basic" (click)="onCancel()">
+        {{ 'ApiManager.Form.Cancel' | translate }}
+      </button>
+      <button nbButton status="primary" (click)="onSave()" [disabled]="form.invalid">
+        {{ 'ApiManager.Form.Save' | translate }}
+      </button>
+    </div>
+  </nb-card-footer>
+</nb-card>

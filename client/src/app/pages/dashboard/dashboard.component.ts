@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NbCardModule } from '@nebular/theme';
 import { TranslateModule } from '@ngx-translate/core';
-import { DetectionsComponent } from './detections/detections.component';
 
 @Component({
   standalone: true,
@@ -11,8 +10,7 @@ import { DetectionsComponent } from './detections/detections.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NbCardModule,
-    TranslateModule,
-    DetectionsComponent
+    TranslateModule
   ]
 })
 export class DashboardComponent {

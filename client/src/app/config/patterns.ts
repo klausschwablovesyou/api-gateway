@@ -1,0 +1,7 @@
+export const IPV4_PATTERN = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+
+export const IPV6_PATTERN = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,7}:$|^(?:[0-9a-fA-F]{1,4}:){0,6}::(?:[0-9a-fA-F]{1,4}:){0,5}[0-9a-fA-F]{1,4}$/;
+
+export const IP_PATTERN = new RegExp(`(${IPV4_PATTERN.source})|(${IPV6_PATTERN.source})`);
+
+export const URL_PATTERN = /^https?:\/\/[\w\-]+(\.[\w\-]+)*(:\d+)?(\/[^\s]*)?$/;

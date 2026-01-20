@@ -1,6 +1,6 @@
 
 {
-  "name": "@api/gatewaz/monorepo",
+  "name": "@api/gateway/monorepo",
   "version": "1.0.0",
   "exports": "./backend/main.ts",
   "tasks": {

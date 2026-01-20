@@ -23,8 +23,9 @@
     "@shared/models/user.model": "../shared/models/user.model.ts",
     "@shared/types/user-role": "../shared/types/user-role.ts",
     "@shared/types/jwt-payload": "../shared/types/jwt-payload.ts",
-    "@shared/types/telegram-verification-state": "../shared/types/telegram-verification-state.ts",
     "@shared/types/realtime-topic": "../shared/types/realtime-topic.ts",
+    "@shared/types/request-limit-unit": "../shared/types/request-limit-unit.ts",
+    "@shared/types/http-method": "../shared/types/http-method.ts",
     "@shared/types/http-status-code": "./src/shared/types/http-status-code.ts"
   },
   "compilerOptions": {

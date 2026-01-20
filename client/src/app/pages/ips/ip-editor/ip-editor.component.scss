@@ -1,0 +1,25 @@
+nb-card {
+  margin: 0;
+  min-width: 400px;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+
+  .label {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .error-message {
+    color: var(--color-danger-500);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

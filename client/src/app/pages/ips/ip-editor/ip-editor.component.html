@@ -1,0 +1,31 @@
+<nb-card>
+  <nb-card-header>
+    <h5>{{ (isEditMode ? 'IpManager.Edit' : 'IpManager.Create') | translate }}</h5>
+  </nb-card-header>
+  <nb-card-body>
+    <form [formGroup]="form">
+      <div class="form-group">
+        <label class="label">{{ 'IpManager.Form.Ip' | translate }}</label>
+        <input nbInput
+               fullWidth
+               formControlName="ip"
+               [placeholder]="'IpManager.Form.IpPlaceholder' | translate"
+               [status]="form.get('ip')?.invalid && form.get('ip')?.touched ? 'danger' : 'basic'">
+        <div class="error-message" *ngIf="form.get('ip')?.invalid && form.get('ip')?.touched">
+          <span *ngIf="form.get('ip')?.errors?.['required']">{{ 'IpManager.Form.IpRequired' | translate }}</span>
+          <span *ngIf="form.get('ip')?.errors?.['pattern']">{{ 'IpManager.Form.IpInvalid' | translate }}</span>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+  <nb-card-footer>
+    <div class="button-group">
+      <button nbButton status="basic" (click)="onCancel()">
+        {{ 'IpManager.Form.Cancel' | translate }}
+      </button>
+      <button nbButton status="primary" (click)="onSave()" [disabled]="form.invalid">
+        {{ 'IpManager.Form.Save' | translate }}
+      </button>
+    </div>
+  </nb-card-footer>
+</nb-card>

@@ -1,9 +1,11 @@
 {
   "App": {
-    "Title": "Telegram Token Harvester"
+    "Title": "API Gateway"
   },
   "Menu": {
     "Dashboard": "Dashboard",
+    "Apis": "APIs",
+    "Ips": "IPs",
     "BotControl": "Bot Control",
     "Logout": "Logout",
     "Admin": {
@@ -101,6 +103,7 @@
     "Error": "Error",
     "Success": "Success",
     "Cancel": "Cancel",
+    "Confirm": "Confirm",
     "Submit": "Submit"
   },
   "Detections": {
@@ -123,6 +126,94 @@
       "Database": "Database Connections",
       "Clients": "clients",
       "Connections": "connections"
+    }
+  },
+  "ApiManager": {
+    "Title": "APIs",
+    "Add": "Add API",
+    "Edit": "Edit API",
+    "Create": "Create API",
+    "NoData": "No APIs found",
+    "ConfirmDelete": "Are you sure you want to delete this API?",
+    "Columns": {
+      "Name": "Name",
+      "Url": "URL",
+      "Method": "Method",
+      "RequestLimit": "Request Limit",
+      "Keys": "Keys",
+      "CopyPublicKey": "Copy public key to clipboard",
+      "CopyPrivateKey": "Copy private key to clipboard",
+      "Code": "Code",
+      "CodeExample": "Code Example",
+      "Actions": "Actions"
+    },
+    "Form": {
+      "Name": "Name",
+      "NamePlaceholder": "Enter API name",
+      "NameRequired": "Name is required",
+      "NameMinLength": "Name must be at least 2 characters",
+      "NameMaxLength": "Name must be at most 100 characters",
+      "Url": "URL",
+      "UrlPlaceholder": "Enter API URL",
+      "UrlRequired": "URL is required",
+      "UrlInvalid": "Invalid URL format",
+      "Method": "HTTP Method",
+      "RequestLimit": "Request Limit",
+      "RequestLimitPlaceholder": "Enter request limit",
+      "RequestLimitRequired": "Request limit is required",
+      "RequestLimitMin": "Request limit must be at least 1",
+      "RequestLimitMax": "Request limit must be at most 1,000,000",
+      "RequestLimitUnit": "Unit",
+      "PublicKey": "Public Key",
+      "PrivateKey": "Private Key",
+      "RegenerateKeys": "Regenerate Keys",
+      "Save": "Save",
+      "Cancel": "Cancel"
+    },
+    "Messages": {
+      "CreateSuccess": "API created successfully",
+      "UpdateSuccess": "API updated successfully",
+      "DeleteSuccess": "API deleted successfully",
+      "NotFound": "API not found",
+      "AlreadyExists": "An API with this name already exists",
+      "KeysRegenerated": "API keys regenerated successfully"
+    },
+    "Keys": {
+      "Title": "API Keys",
+      "Warning": "Save these keys securely. The private key will not be shown again."
+    },
+    "CodeExample": {
+      "Title": "Python Code Example",
+      "Warning": "This code contains your private key. Do not share it publicly.",
+      "Copy": "Copy to Clipboard",
+      "Close": "Close"
+    }
+  },
+  "IpManager": {
+    "Title": "IPs",
+    "Add": "Add IP",
+    "Edit": "Edit IP",
+    "Create": "Create IP",
+    "NoData": "No IPs found",
+    "ConfirmDelete": "Are you sure you want to delete this IP?",
+    "Columns": {
+      "Ip": "IP Address",
+      "Actions": "Actions"
+    },
+    "Form": {
+      "Ip": "IP Address",
+      "IpPlaceholder": "Enter IP address",
+      "IpRequired": "IP address is required",
+      "IpInvalid": "Invalid IP address format",
+      "Save": "Save",
+      "Cancel": "Cancel"
+    },
+    "Messages": {
+      "CreateSuccess": "IP created successfully",
+      "UpdateSuccess": "IP updated successfully",
+      "DeleteSuccess": "IP deleted successfully",
+      "NotFound": "IP not found",
+      "AlreadyExists": "This IP address already exists"
     }
   }
 }

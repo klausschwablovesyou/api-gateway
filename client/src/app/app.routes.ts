@@ -26,8 +26,12 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
       {
-        path: 'bot',
-        loadComponent: () => import('./pages/bot/bot.component').then(m => m.BotComponent)
+        path: 'apis',
+        loadComponent: () => import('./pages/apis/apis.component').then(m => m.ApisComponent)
+      },
+      {
+        path: 'ips',
+        loadComponent: () => import('./pages/ips/ips.component').then(m => m.IpsComponent)
       },
       {
         path: 'admin/memory',

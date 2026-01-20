@@ -5,7 +5,6 @@ import { NbCardModule, NbInputModule, NbButtonModule, NbLayoutModule, NbIconModu
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { AuthManager } from '../../managers/auth-manager/auth.manager';
-import { BotManager } from '../../managers/bot-manager/bot.manager';
 
 @Component({
   standalone: true,
@@ -31,7 +30,6 @@ export class LoginComponent {
     private _formBuilder: FormBuilder,
     private _router: Router,
     private _authManager: AuthManager,
-    private _botManager: BotManager
   ) {
     this.loginForm = this._formBuilder.group({
       username: ['', [Validators.required]],
@@ -46,29 +44,13 @@ export class LoginComponent {
         username, password
       }).subscribe({
         next: () => {
-          this._checkBotSettingsAndNavigate();
+          this._router.navigate(['/dashboard']);
         },
         error: (error: Error) => {
           console.error('Login failed:', error);
         }
       });
     }
-  }
-
-  private _checkBotSettingsAndNavigate(): void {
-    this._botManager.getSettings().subscribe({
-      next: (settings) => {
-        if (settings?.telegramApiId && settings?.telegramApiHash) {
-          this._router.navigate(['/dashboard']);
-        } else {
-          this._router.navigate(['/bot']);
-        }
-      },
-      error: () => {
-        // No settings found, redirect to bot settings page
-        this._router.navigate(['/bot']);
-      }
-    });
   }
 
   public navigateToRegister(): void {

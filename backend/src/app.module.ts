@@ -1,14 +1,14 @@
-import { Module, TokenInjector, GLOBAL_GUARD } from '@danet/core';
+import { Module } from '@danet/core';
 import { PostgresService } from './shared/database/postgres.service.ts';
 import { RedirectExceptionFilter } from './shared/filters/redirect-exception.filter.ts';
 import { HttpExceptionFilter } from './shared/filters/http-exception.filter.ts';
-import { TelegramModule } from './modules/telegram/telegram.module.ts';
 import { AuthModule } from './modules/auth/auth.module.ts';
-import { RolesGuard } from './shared/guards/roles.guard.ts';
-import { JwtService } from './shared/services/jwt.service.ts';
+import { GatewayModule } from './modules/gateway/gateway.module.ts';
+import { ApiManagerModule } from './modules/api-manager/api-manager.module.ts';
+import { IpManagerModule } from './modules/ip-manager/ip-manager.module.ts';
 
 @Module({
-  imports: [TelegramModule, AuthModule],
+  imports: [AuthModule, GatewayModule, ApiManagerModule, IpManagerModule],
   injectables: [
     PostgresService,
     RedirectExceptionFilter,

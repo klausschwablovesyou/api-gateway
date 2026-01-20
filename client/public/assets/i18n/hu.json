@@ -1,9 +1,11 @@
 {
   "App": {
-    "Title": "Telegram Token Gyűjtő"
+    "Title": "API Gateway"
   },
   "Menu": {
     "Dashboard": "Vezérlőpult",
+    "Apis": "API-k",
+    "Ips": "IP címek",
     "BotControl": "Bot Vezérlés",
     "Logout": "Kijelentkezés",
     "Admin": {
@@ -101,6 +103,7 @@
     "Error": "Hiba",
     "Success": "Sikeres",
     "Cancel": "Mégse",
+    "Confirm": "Megerősítés",
     "Submit": "Küldés"
   },
   "Detections": {
@@ -123,6 +126,94 @@
       "Database": "Adatbázis Kapcsolatok",
       "Clients": "kliens",
       "Connections": "kapcsolat"
+    }
+  },
+  "ApiManager": {
+    "Title": "API-k",
+    "Add": "API hozzáadása",
+    "Edit": "API szerkesztése",
+    "Create": "API létrehozása",
+    "NoData": "Nincs API",
+    "ConfirmDelete": "Biztosan törölni szeretné ezt az API-t?",
+    "Columns": {
+      "Name": "Név",
+      "Url": "URL",
+      "Method": "Metódus",
+      "RequestLimit": "Kérés limit",
+      "Keys": "Kulcsok",
+      "CopyPublicKey": "Publikus kulcs másolása a vágólapra",
+      "CopyPrivateKey": "Privát kulcs másolása a vágólapra",
+      "Code": "Kód",
+      "CodeExample": "Kód példa",
+      "Actions": "Műveletek"
+    },
+    "Form": {
+      "Name": "Név",
+      "NamePlaceholder": "Adja meg az API nevét",
+      "NameRequired": "A név megadása kötelező",
+      "NameMinLength": "A név legalább 2 karakter hosszú legyen",
+      "NameMaxLength": "A név legfeljebb 100 karakter hosszú lehet",
+      "Url": "URL",
+      "UrlPlaceholder": "Adja meg az API URL-t",
+      "UrlRequired": "Az URL megadása kötelező",
+      "UrlInvalid": "Érvénytelen URL formátum",
+      "Method": "HTTP Metódus",
+      "RequestLimit": "Kérés limit",
+      "RequestLimitPlaceholder": "Adja meg a kérés limitet",
+      "RequestLimitRequired": "A kérés limit megadása kötelező",
+      "RequestLimitMin": "A kérés limit legalább 1 legyen",
+      "RequestLimitMax": "A kérés limit legfeljebb 1 000 000 lehet",
+      "RequestLimitUnit": "Egység",
+      "PublicKey": "Publikus kulcs",
+      "PrivateKey": "Privát kulcs",
+      "RegenerateKeys": "Kulcsok újragenerálása",
+      "Save": "Mentés",
+      "Cancel": "Mégse"
+    },
+    "Messages": {
+      "CreateSuccess": "API sikeresen létrehozva",
+      "UpdateSuccess": "API sikeresen frissítve",
+      "DeleteSuccess": "API sikeresen törölve",
+      "NotFound": "API nem található",
+      "AlreadyExists": "Már létezik API ezzel a névvel",
+      "KeysRegenerated": "API kulcsok sikeresen újragenerálva"
+    },
+    "Keys": {
+      "Title": "API kulcsok",
+      "Warning": "Mentse el ezeket a kulcsokat biztonságosan. A privát kulcs nem lesz többé megjeleníthető."
+    },
+    "CodeExample": {
+      "Title": "Python kód példa",
+      "Warning": "Ez a kód tartalmazza a privát kulcsát. Ne ossza meg nyilvánosan.",
+      "Copy": "Másolás vágólapra",
+      "Close": "Bezárás"
+    }
+  },
+  "IpManager": {
+    "Title": "IP címek",
+    "Add": "IP hozzáadása",
+    "Edit": "IP szerkesztése",
+    "Create": "IP létrehozása",
+    "NoData": "Nincs IP cím",
+    "ConfirmDelete": "Biztosan törölni szeretné ezt az IP címet?",
+    "Columns": {
+      "Ip": "IP cím",
+      "Actions": "Műveletek"
+    },
+    "Form": {
+      "Ip": "IP cím",
+      "IpPlaceholder": "Adja meg az IP címet",
+      "IpRequired": "Az IP cím megadása kötelező",
+      "IpInvalid": "Érvénytelen IP cím formátum",
+      "Save": "Mentés",
+      "Cancel": "Mégse"
+    },
+    "Messages": {
+      "CreateSuccess": "IP sikeresen létrehozva",
+      "UpdateSuccess": "IP sikeresen frissítve",
+      "DeleteSuccess": "IP sikeresen törölve",
+      "NotFound": "IP nem található",
+      "AlreadyExists": "Ez az IP cím már létezik"
     }
   }
 }

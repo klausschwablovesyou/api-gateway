@@ -1,0 +1,37 @@
+<nb-card>
+  <nb-card-header>
+    <div class="header-container">
+      <h5>{{ 'IpManager.Title' | translate }}</h5>
+      <button nbButton status="primary" size="small" (click)="onAdd()">
+        <nb-icon icon="plus-outline"></nb-icon>
+        {{ 'IpManager.Add' | translate }}
+      </button>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{{ 'IpManager.Columns.Ip' | translate }}</th>
+          <th>{{ 'IpManager.Columns.Actions' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ip of ips">
+          <td>{{ ip.ip }}</td>
+          <td class="actions">
+            <button nbButton ghost status="primary" size="small" (click)="onEdit(ip)">
+              <nb-icon icon="edit-outline"></nb-icon>
+            </button>
+            <button nbButton ghost status="danger" size="small" (click)="onDelete(ip)">
+              <nb-icon icon="trash-2-outline"></nb-icon>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="ips.length === 0">
+          <td colspan="2" class="text-center">{{ 'IpManager.NoData' | translate }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </nb-card-body>
+</nb-card>

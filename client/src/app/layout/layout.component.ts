@@ -5,7 +5,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { AuthManager } from '../managers/auth-manager/auth.manager';
 import { UserRole } from '@shared/types/user-role';
-import { RealtimeService } from '../services/realtime.service';
 
 @Component({
   standalone: true,
@@ -30,16 +29,14 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private _sidebarExpanded = false;
 
   constructor(
-    private _translateService: TranslateService,
-    private _sidebarService: NbSidebarService,
-    private _menuService: NbMenuService,
-    private _authManager: AuthManager,
-    private _router: Router,
-    private _realtimeService: RealtimeService
+    private readonly _translateService: TranslateService,
+    private readonly _sidebarService: NbSidebarService,
+    private readonly _menuService: NbMenuService,
+    private readonly _authManager: AuthManager,
+    private readonly _router: Router
   ) {}
 
   public ngOnInit(): void {
-    this._realtimeService.connect();
     this._updateMenuTranslations();
 
     // Update menu when language changes
@@ -66,7 +63,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this._realtimeService.disconnect();
     this._destroy$.next();
     this._destroy$.complete();
   }
@@ -98,14 +94,20 @@ export class LayoutComponent implements OnInit, OnDestroy {
         link: '/dashboard'
       },
       {
-        title: this._translateService.instant('Menu.BotControl'),
-        icon: 'settings-2-outline',
-        link: '/bot'
-      }
+        title: this._translateService.instant('Menu.Apis'),
+        icon: 'globe-outline',
+        link: '/apis'
+      },
     ];
 
     // Add SuperAdmin menu if user has SuperAdmin role
     if (currentUser?.userRole === UserRole.SuperAdmin) {
+      this.menuItems.push({
+        title: this._translateService.instant('Menu.Ips'),
+        icon: 'monitor-outline',
+        link: '/ips'
+      });
+
       this.menuItems.push({
         title: this._translateService.instant('Menu.Admin.Title'),
         icon: 'shield-outline',

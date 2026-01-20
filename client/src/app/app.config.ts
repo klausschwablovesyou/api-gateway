@@ -37,7 +37,7 @@ export const appConfig: ApplicationConfig = {
       lang: 'en'
     }),
     importProvidersFrom(
-      NbThemeModule.forRoot({ name: 'cosmic' }),
+      NbThemeModule.forRoot({ name: 'corporate' }),
       NbEvaIconsModule,
       NbSidebarModule.forRoot(),
       NbMenuModule.forRoot(),
