@@ -19,6 +19,11 @@ RUN npm run build
 # Stage 2: Setup Deno backend
 FROM denoland/deno:2.6.3
 
+# Install iproute2 for IP management (ip addr add/del commands)
+# Run as root to allow ip addr add/del operations with NET_ADMIN capability
+USER root
+RUN apt-get update && apt-get install -y iproute2 && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Copy backend source
