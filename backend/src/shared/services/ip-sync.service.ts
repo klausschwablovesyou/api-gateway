@@ -11,6 +11,18 @@ export class IpSyncService {
   async verifyIpWorks(ip: string): Promise<{ success: boolean; detectedIp?: string; error?: string }> {
     console.log(`[IpSync] Verifying IP ${ip} can make outbound requests...`);
 
+    // Small delay to ensure IP is fully registered on the interface
+    await new Promise((r) => setTimeout(r, 1000));
+
+    // Check if IP is actually on the interface
+    const networkInterface = await this.getDefaultInterface();
+    const isOnInterface = await this._checkIpOnInterface(ip, networkInterface);
+    console.log(`[IpSync] IP ${ip} on ${networkInterface}: ${isOnInterface}`);
+
+    if (!isOnInterface) {
+      return { success: false, error: `IP ${ip} not found on interface ${networkInterface}` };
+    }
+
     return new Promise((resolve) => {
       const options = {
         hostname: 'api.ipify.org',
@@ -18,8 +30,11 @@ export class IpSyncService {
         path: '/',
         method: 'GET',
         localAddress: ip,
+        family: 4, // Force IPv4
         timeout: 10000,
       };
+
+      console.log(`[IpSync] Making request with options:`, JSON.stringify(options));
 
       const req = httpsRequest(options, (res) => {
         let data = '';
@@ -53,6 +68,21 @@ export class IpSyncService {
 
       req.end();
     });
+  }
+
+  private async _checkIpOnInterface(ip: string, networkInterface: string): Promise<boolean> {
+    try {
+      const command = new Deno.Command('ip', {
+        args: ['addr', 'show', 'dev', networkInterface],
+      });
+      const result = await command.output();
+      const output = new TextDecoder().decode(result.stdout);
+      console.log(`[IpSync] Interface ${networkInterface} addresses:\n${output}`);
+      return output.includes(ip);
+    } catch (err) {
+      console.error(`[IpSync] Failed to check interface:`, err);
+      return false;
+    }
   }
 
   async getDefaultInterface(): Promise<string> {
