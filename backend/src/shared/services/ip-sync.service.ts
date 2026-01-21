@@ -1,11 +1,59 @@
 import { Injectable } from '@danet/core';
 import { IpRepository } from '../repositories/ip.repository.ts';
+import { request as httpsRequest } from 'node:https';
 
 @Injectable()
 export class IpSyncService {
   private _networkInterface: string | null = null;
 
   constructor(private readonly _ipRepository: IpRepository) {}
+
+  async verifyIpWorks(ip: string): Promise<{ success: boolean; detectedIp?: string; error?: string }> {
+    console.log(`[IpSync] Verifying IP ${ip} can make outbound requests...`);
+
+    return new Promise((resolve) => {
+      const options = {
+        hostname: 'api.ipify.org',
+        port: 443,
+        path: '/',
+        method: 'GET',
+        localAddress: ip,
+        timeout: 10000,
+      };
+
+      const req = httpsRequest(options, (res) => {
+        let data = '';
+
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+
+        res.on('end', () => {
+          const detectedIp = data.trim();
+          if (detectedIp === ip) {
+            console.log(`[IpSync] ✓ Verified: ${ip} - outbound IP matches`);
+            resolve({ success: true, detectedIp });
+          } else {
+            console.error(`[IpSync] ✗ Verification failed: expected ${ip}, got ${detectedIp}`);
+            resolve({ success: false, detectedIp, error: `IP mismatch: expected ${ip}, got ${detectedIp}` });
+          }
+        });
+      });
+
+      req.on('error', (err) => {
+        console.error(`[IpSync] ✗ Verification failed for ${ip}: ${err.message}`);
+        resolve({ success: false, error: err.message });
+      });
+
+      req.on('timeout', () => {
+        req.destroy();
+        console.error(`[IpSync] ✗ Verification timed out for ${ip}`);
+        resolve({ success: false, error: 'Request timed out' });
+      });
+
+      req.end();
+    });
+  }
 
   async getDefaultInterface(): Promise<string> {
     if (this._networkInterface) {
