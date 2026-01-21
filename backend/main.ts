@@ -5,6 +5,7 @@ import { existsSync } from 'jsr:@std/fs';
 import { PostgresService } from './src/shared/database/postgres.service.ts';
 import { MigrationRunner } from './src/shared/database/migration-runner.ts';
 import { FileLoggerService } from './src/shared/logger/file-logger.service.ts';
+import { IpSyncService } from './src/shared/services/ip-sync.service.ts';
 
 // Initialize file logger first (before any console.log calls)
 const fileLogger = new FileLoggerService();
@@ -32,6 +33,17 @@ const application = new DanetApplication();
 application.registerBasePath('/api');
 
 await application.init(AppModule);
+
+// Sync IPs from database to network interface (for IP rotation)
+const syncIps = Deno.env.get('SYNC_IPS_ON_STARTUP') !== 'false';
+if (syncIps) {
+  try {
+    const ipSyncService = await application.get(IpSyncService);
+    await ipSyncService.syncIpsToNetwork();
+  } catch (error) {
+    console.error('[IpSync] Failed to sync IPs on startup:', error);
+  }
+}
 
 // Use different static assets path based on environment
 // Register static assets AFTER app initialization so API routes take priority
