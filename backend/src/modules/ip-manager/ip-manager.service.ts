@@ -18,24 +18,11 @@ export class IpManagerService {
       throw new HttpException('IP already exists', HTTP_STATUS.CONFLICT);
     }
 
-    // First, try to add IP to network interface
-    await this._ipSyncService.addIpToNetwork(dto.ip);
-
-    // Verify the IP can make outbound requests
-    const verification = await this._ipSyncService.verifyIpWorks(dto.ip);
-    if (!verification.success) {
-      // Rollback: remove IP from network
-      await this._ipSyncService.removeIpFromNetwork(dto.ip);
-      throw new HttpException(
-        `IP verification failed: ${verification.error}`,
-        HTTP_STATUS.BAD_REQUEST
-      );
-    }
-
-    // IP works, save to database
     const ip = await this._ipRepository.create({
       ip: dto.ip,
     });
+
+    await this._ipSyncService.addIpToNetwork(ip.ip);
 
     return ip;
   }

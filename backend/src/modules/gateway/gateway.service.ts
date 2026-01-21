@@ -8,8 +8,6 @@ import { RequestLimitUnit } from '@shared/types/request-limit-unit.ts';
 import { Api } from '@shared/models/api.model.ts';
 import { Ip } from '@shared/models/ip.model.ts';
 import { IpUsage } from '@shared/models/ip-usage.model.ts';
-import { request as httpRequest } from 'node:http';
-import { request as httpsRequest } from 'node:https';
 
 interface IpWithUsage extends Ip {
   usage: IpUsage | null;
@@ -180,62 +178,49 @@ export class GatewayService {
     localAddress: string,
     body?: Record<string, string>
   ): Promise<unknown> {
-    const isHttps = url.protocol === 'https:';
-    const requestFn = isHttps ? httpsRequest : httpRequest;
+    const client = Deno.createHttpClient({
+      localAddress: localAddress,
+    });
 
-    return new Promise((resolve, reject) => {
-      const options = {
-        hostname: url.hostname,
-        port: url.port || (isHttps ? 443 : 80),
-        path: url.pathname + url.search,
+    try {
+      const fetchOptions: RequestInit & { client: Deno.HttpClient } = {
         method: method,
-        localAddress: localAddress,
-        headers: {} as Record<string, string>,
+        client: client,
       };
 
       if (body) {
-        options.headers['Content-Type'] = 'application/json';
+        fetchOptions.headers = { 'Content-Type': 'application/json' };
+        fetchOptions.body = JSON.stringify(body);
       }
 
-      const req = requestFn(options, (res) => {
-        let data = '';
+      const response = await fetch(url.toString(), fetchOptions);
 
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
-
-        res.on('end', () => {
-          const contentType = res.headers['content-type'] || '';
-
-          if (!res.statusCode || res.statusCode >= 400) {
-            reject(new HttpException(
-              `Target API returned ${res.statusCode}: ${res.statusMessage}`,
-              res.statusCode || 500
-            ));
-            return;
-          }
-
-          if (contentType.includes('application/json')) {
-            try {
-              resolve(JSON.parse(data));
-            } catch {
-              resolve({ data });
-            }
-          } else {
-            resolve({ data });
-          }
-        });
-      });
-
-      req.on('error', (err) => {
-        reject(new HttpException(`Request failed: ${err.message}`, 500));
-      });
-
-      if (body) {
-        req.write(JSON.stringify(body));
+      if (!response.ok) {
+        throw new HttpException(
+          `Target API returned ${response.status}: ${response.statusText}`,
+          response.status
+        );
       }
 
-      req.end();
-    });
+      const contentType = response.headers.get('content-type') || '';
+      const data = await response.text();
+
+      if (contentType.includes('application/json')) {
+        try {
+          return JSON.parse(data);
+        } catch {
+          return { data };
+        }
+      } else {
+        return { data };
+      }
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+      throw new HttpException(`Request failed: ${String(err)}`, 500);
+    } finally {
+      client.close();
+    }
   }
 }
