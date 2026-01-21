@@ -1,6 +1,5 @@
 import { Injectable } from '@danet/core';
 import { IpRepository } from '../repositories/ip.repository.ts';
-import { request as httpsRequest } from 'node:https';
 
 @Injectable()
 export class IpSyncService {
@@ -23,51 +22,30 @@ export class IpSyncService {
       return { success: false, error: `IP ${ip} not found on interface ${networkInterface}` };
     }
 
-    return new Promise((resolve) => {
-      const options = {
-        hostname: 'api.ipify.org',
-        port: 443,
-        path: '/',
-        method: 'GET',
-        localAddress: ip,
-        family: 4, // Force IPv4
-        timeout: 10000,
-      };
-
-      console.log(`[IpSync] Making request with options:`, JSON.stringify(options));
-
-      const req = httpsRequest(options, (res) => {
-        let data = '';
-
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
-
-        res.on('end', () => {
-          const detectedIp = data.trim();
-          if (detectedIp === ip) {
-            console.log(`[IpSync] ✓ Verified: ${ip} - outbound IP matches`);
-            resolve({ success: true, detectedIp });
-          } else {
-            console.error(`[IpSync] ✗ Verification failed: expected ${ip}, got ${detectedIp}`);
-            resolve({ success: false, detectedIp, error: `IP mismatch: expected ${ip}, got ${detectedIp}` });
-          }
-        });
-      });
-
-      req.on('error', (err) => {
-        console.error(`[IpSync] ✗ Verification failed for ${ip}: ${err.message}`);
-        resolve({ success: false, error: err.message });
-      });
-
-      req.on('timeout', () => {
-        req.destroy();
-        console.error(`[IpSync] ✗ Verification timed out for ${ip}`);
-        resolve({ success: false, error: 'Request timed out' });
-      });
-
-      req.end();
+    // Use Deno's native HTTP client with localAddress
+    const client = Deno.createHttpClient({
+      localAddress: ip,
     });
+
+    try {
+      const response = await fetch('https://api.ipify.org', { client });
+      const detectedIp = (await response.text()).trim();
+
+      console.log(`[IpSync] Detected IP: ${detectedIp}`);
+
+      if (detectedIp === ip) {
+        console.log(`[IpSync] ✓ Verified: ${ip} - outbound IP matches`);
+        return { success: true, detectedIp };
+      } else {
+        console.error(`[IpSync] ✗ Verification failed: expected ${ip}, got ${detectedIp}`);
+        return { success: false, detectedIp, error: `IP mismatch: expected ${ip}, got ${detectedIp}` };
+      }
+    } catch (err) {
+      console.error(`[IpSync] ✗ Verification failed for ${ip}:`, err);
+      return { success: false, error: String(err) };
+    } finally {
+      client.close();
+    }
   }
 
   private async _checkIpOnInterface(ip: string, networkInterface: string): Promise<boolean> {
