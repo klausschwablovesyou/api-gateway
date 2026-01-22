@@ -20,6 +20,12 @@ import { ApiRequestDecoratorService } from '@app/modules/api/api-request-decorat
 import { API_CLIENT_SERVICE_IMPL } from '@app/modules/api/api-client/i-api-client.service';
 import { ApiClientService } from '@app/modules/api/api-client/api-client.service';
 import { apiMessageExceptions } from '@app/config/api-message-exceptions';
+import { ConfigManagerService } from '@app/managers/config-manager/config-manager.service';
+import { firstValueFrom } from 'rxjs';
+
+function initializeConfig(configManagerService: ConfigManagerService): () => Promise<void> {
+  return () => firstValueFrom(configManagerService.loadConfig()).then(() => {});
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -90,6 +96,12 @@ export const appConfig: ApplicationConfig = {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
+      multi: true
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeConfig,
+      deps: [ConfigManagerService],
       multi: true
     }
   ]

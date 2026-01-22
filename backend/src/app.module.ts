@@ -6,11 +6,12 @@ import { AuthModule } from './modules/auth/auth.module.ts';
 import { GatewayModule } from './modules/gateway/gateway.module.ts';
 import { ApiManagerModule } from './modules/api-manager/api-manager.module.ts';
 import { IpManagerModule } from './modules/ip-manager/ip-manager.module.ts';
+import { ConfigManagerModule } from './modules/config-manager/config-manager.module.ts';
 import { IpSyncService } from './shared/services/ip-sync.service.ts';
 import { IpRepository } from './shared/repositories/ip.repository.ts';
 
 @Module({
-  imports: [AuthModule, GatewayModule, ApiManagerModule, IpManagerModule],
+  imports: [AuthModule, GatewayModule, ApiManagerModule, IpManagerModule, ConfigManagerModule],
   injectables: [
     PostgresService,
     RedirectExceptionFilter,

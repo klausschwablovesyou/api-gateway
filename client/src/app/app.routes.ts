@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
+import { RoleGuard } from './guards/role.guard';
 import { LayoutComponent } from './layout/layout.component';
+import { UserRole } from '@shared/types/user-role';
 
 export const routes: Routes = [
   {
@@ -36,6 +38,12 @@ export const routes: Routes = [
       {
         path: 'admin/memory',
         loadComponent: () => import('./pages/admin/memory/memory.component').then(m => m.MemoryComponent)
+      },
+      {
+        path: 'config',
+        loadComponent: () => import('./pages/config/config.component').then(m => m.ConfigComponent),
+        canActivate: [RoleGuard],
+        data: { roles: [UserRole.SuperAdmin] }
       }
     ]
   },

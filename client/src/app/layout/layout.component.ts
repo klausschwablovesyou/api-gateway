@@ -109,6 +109,12 @@ export class LayoutComponent implements OnInit, OnDestroy {
       });
 
       this.menuItems.push({
+        title: this._translateService.instant('Menu.Config'),
+        icon: 'settings-outline',
+        link: '/config'
+      });
+
+      this.menuItems.push({
         title: this._translateService.instant('Menu.Admin.Title'),
         icon: 'shield-outline',
         children: [

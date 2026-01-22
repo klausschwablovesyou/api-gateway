@@ -6,6 +6,7 @@
     "Dashboard": "Vezérlőpult",
     "Apis": "API-k",
     "Ips": "IP címek",
+    "Config": "Beállítások",
     "BotControl": "Bot Vezérlés",
     "Logout": "Kijelentkezés",
     "Admin": {
@@ -214,6 +215,13 @@
       "DeleteSuccess": "IP sikeresen törölve",
       "NotFound": "IP nem található",
       "AlreadyExists": "Ez az IP cím már létezik"
+    }
+  },
+  "ConfigManager": {
+    "Title": "Beállítások",
+    "EnableRegistration": "Regisztráció engedélyezése",
+    "Messages": {
+      "UpdateSuccess": "Beállítások sikeresen frissítve"
     }
   }
 }

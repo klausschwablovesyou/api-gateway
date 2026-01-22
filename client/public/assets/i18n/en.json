@@ -6,6 +6,7 @@
     "Dashboard": "Dashboard",
     "Apis": "APIs",
     "Ips": "IPs",
+    "Config": "Configuration",
     "BotControl": "Bot Control",
     "Logout": "Logout",
     "Admin": {
@@ -214,6 +215,13 @@
       "DeleteSuccess": "IP deleted successfully",
       "NotFound": "IP not found",
       "AlreadyExists": "This IP address already exists"
+    }
+  },
+  "ConfigManager": {
+    "Title": "Configuration",
+    "EnableRegistration": "Enable Registration",
+    "Messages": {
+      "UpdateSuccess": "Configuration updated successfully"
     }
   }
 }

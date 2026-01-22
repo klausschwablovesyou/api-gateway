@@ -5,6 +5,7 @@ import { NbCardModule, NbInputModule, NbButtonModule, NbLayoutModule, NbIconModu
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { AuthManager } from '../../managers/auth-manager/auth.manager';
+import { ConfigStatesService } from '../../managers/config-manager/config-states.service';
 
 @Component({
   standalone: true,
@@ -30,6 +31,7 @@ export class LoginComponent {
     private _formBuilder: FormBuilder,
     private _router: Router,
     private _authManager: AuthManager,
+    public configStatesService: ConfigStatesService
   ) {
     this.loginForm = this._formBuilder.group({
       username: ['', [Validators.required]],

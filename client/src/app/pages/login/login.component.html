@@ -46,7 +46,7 @@
             </button>
           </form>
         </nb-card-body>
-        <nb-card-footer>
+        <nb-card-footer *ngIf="(configStatesService.config.state | async)?.enableRegistration">
           <p class="text-center">
             {{ 'Auth.Login.NoAccount' | translate }}
             <a href="#" (click)="navigateToRegister(); $event.preventDefault()">{{ 'Auth.Login.RegisterLink' | translate }}</a>

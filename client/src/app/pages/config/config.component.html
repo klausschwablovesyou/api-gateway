@@ -1,0 +1,14 @@
+<nb-card>
+  <nb-card-header>
+    {{ 'ConfigManager.Title' | translate }}
+  </nb-card-header>
+  <nb-card-body>
+    <div class="config-item" *ngIf="configStatesService.config.state | async as config">
+      <nb-toggle
+        [checked]="config.enableRegistration"
+        (checkedChange)="onEnableRegistrationChange($event)">
+        {{ 'ConfigManager.EnableRegistration' | translate }}
+      </nb-toggle>
+    </div>
+  </nb-card-body>
+</nb-card>
