@@ -4,11 +4,17 @@ import { IpRepository } from '../repositories/ip.repository.ts';
 @Injectable()
 export class IpSyncService {
   private _networkInterface: string | null = null;
+  private readonly _isWindows = Deno.build.os === 'windows';
 
   constructor(private readonly _ipRepository: IpRepository) {}
 
   async getDefaultInterface(): Promise<string> {
     if (this._networkInterface) {
+      return this._networkInterface;
+    }
+
+    if (this._isWindows) {
+      this._networkInterface = 'Loopback Pseudo-Interface 1';
       return this._networkInterface;
     }
 
@@ -36,27 +42,56 @@ export class IpSyncService {
     console.log(`[IpSync] Adding IP ${ip} to ${networkInterface}`);
 
     try {
-      const command = new Deno.Command('ip', {
-        args: ['addr', 'add', `${ip}/32`, 'dev', networkInterface],
-      });
-      const result = await command.output();
-
-      if (result.success) {
-        console.log(`[IpSync] ✓ Added: ${ip}`);
-        return true;
+      if (this._isWindows) {
+        return await this._addIpWindows(ip, networkInterface);
       } else {
-        const stderr = new TextDecoder().decode(result.stderr);
-        if (stderr.includes('RTNETLINK answers: File exists')) {
-          console.log(`[IpSync] ✓ Already exists: ${ip}`);
-          return true;
-        } else {
-          console.error(`[IpSync] ✗ Failed to add: ${ip} - ${stderr.trim()}`);
-          return false;
-        }
+        return await this._addIpLinux(ip, networkInterface);
       }
     } catch (err) {
       console.error(`[IpSync] ✗ Error adding: ${ip} -`, err);
       return false;
+    }
+  }
+
+  private async _addIpLinux(ip: string, networkInterface: string): Promise<boolean> {
+    const command = new Deno.Command('ip', {
+      args: ['addr', 'add', `${ip}/32`, 'dev', networkInterface],
+    });
+    const result = await command.output();
+
+    if (result.success) {
+      console.log(`[IpSync] ✓ Added: ${ip}`);
+      return true;
+    } else {
+      const stderr = new TextDecoder().decode(result.stderr);
+      if (stderr.includes('RTNETLINK answers: File exists')) {
+        console.log(`[IpSync] ✓ Already exists: ${ip}`);
+        return true;
+      } else {
+        console.error(`[IpSync] ✗ Failed to add: ${ip} - ${stderr.trim()}`);
+        return false;
+      }
+    }
+  }
+
+  private async _addIpWindows(ip: string, networkInterface: string): Promise<boolean> {
+    const command = new Deno.Command('netsh', {
+      args: ['interface', 'ip', 'add', 'address', networkInterface, ip, '255.255.255.255'],
+    });
+    const result = await command.output();
+
+    if (result.success) {
+      console.log(`[IpSync] ✓ Added: ${ip}`);
+      return true;
+    } else {
+      const stderr = new TextDecoder().decode(result.stderr);
+      if (stderr.includes('already been configured') || stderr.includes('Object already exists')) {
+        console.log(`[IpSync] ✓ Already exists: ${ip}`);
+        return true;
+      } else {
+        console.error(`[IpSync] ✗ Failed to add: ${ip} - ${stderr.trim()}`);
+        return false;
+      }
     }
   }
 
@@ -65,27 +100,56 @@ export class IpSyncService {
     console.log(`[IpSync] Removing IP ${ip} from ${networkInterface}`);
 
     try {
-      const command = new Deno.Command('ip', {
-        args: ['addr', 'del', `${ip}/32`, 'dev', networkInterface],
-      });
-      const result = await command.output();
-
-      if (result.success) {
-        console.log(`[IpSync] ✓ Removed: ${ip}`);
-        return true;
+      if (this._isWindows) {
+        return await this._removeIpWindows(ip, networkInterface);
       } else {
-        const stderr = new TextDecoder().decode(result.stderr);
-        if (stderr.includes('Cannot assign requested address')) {
-          console.log(`[IpSync] ✓ Already removed: ${ip}`);
-          return true;
-        } else {
-          console.error(`[IpSync] ✗ Failed to remove: ${ip} - ${stderr.trim()}`);
-          return false;
-        }
+        return await this._removeIpLinux(ip, networkInterface);
       }
     } catch (err) {
       console.error(`[IpSync] ✗ Error removing: ${ip} -`, err);
       return false;
+    }
+  }
+
+  private async _removeIpLinux(ip: string, networkInterface: string): Promise<boolean> {
+    const command = new Deno.Command('ip', {
+      args: ['addr', 'del', `${ip}/32`, 'dev', networkInterface],
+    });
+    const result = await command.output();
+
+    if (result.success) {
+      console.log(`[IpSync] ✓ Removed: ${ip}`);
+      return true;
+    } else {
+      const stderr = new TextDecoder().decode(result.stderr);
+      if (stderr.includes('Cannot assign requested address')) {
+        console.log(`[IpSync] ✓ Already removed: ${ip}`);
+        return true;
+      } else {
+        console.error(`[IpSync] ✗ Failed to remove: ${ip} - ${stderr.trim()}`);
+        return false;
+      }
+    }
+  }
+
+  private async _removeIpWindows(ip: string, networkInterface: string): Promise<boolean> {
+    const command = new Deno.Command('netsh', {
+      args: ['interface', 'ip', 'delete', 'address', networkInterface, ip],
+    });
+    const result = await command.output();
+
+    if (result.success) {
+      console.log(`[IpSync] ✓ Removed: ${ip}`);
+      return true;
+    } else {
+      const stderr = new TextDecoder().decode(result.stderr);
+      if (stderr.includes('not found') || stderr.includes('Element not found')) {
+        console.log(`[IpSync] ✓ Already removed: ${ip}`);
+        return true;
+      } else {
+        console.error(`[IpSync] ✗ Failed to remove: ${ip} - ${stderr.trim()}`);
+        return false;
+      }
     }
   }
 
