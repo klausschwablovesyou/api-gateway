@@ -43,7 +43,7 @@ export const appConfig: ApplicationConfig = {
       lang: 'en'
     }),
     importProvidersFrom(
-      NbThemeModule.forRoot({ name: 'corporate' }),
+      NbThemeModule.forRoot({ name: 'cyberpunk' }),
       NbEvaIconsModule,
       NbSidebarModule.forRoot(),
       NbMenuModule.forRoot(),
