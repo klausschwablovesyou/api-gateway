@@ -1,5 +1,6 @@
-/* You can add global styles to this file, and also import other style files */
+/* Cyberpunk Neon Theme - Global Styles */
 
+@use 'sass:color';
 @use 'themes' as *;
 @use '@nebular/theme/styles/globals' as *;
 
@@ -7,11 +8,27 @@
   @include nb-theme-global();
 };
 
+// Cyberpunk color variables
+$cyber-primary: #00d4ff;
+$cyber-primary-dark: #00b8db;
+$cyber-success: #00ff9f;
+$cyber-info: #0099ff;
+$cyber-warning: #ffaa00;
+$cyber-danger: #ff0066;
+$cyber-bg-dark: #0d0d0d;
+$cyber-bg-card: #1a1a2e;
+$cyber-bg-input: #12121f;
+$cyber-border: #2a2a4a;
+$cyber-text: #e0e0e0;
+$cyber-text-muted: #9090a8;
+
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow: auto;
+  background-color: $cyber-bg-dark;
+  color: $cyber-text;
 }
 
 // Mobile viewport fix
@@ -37,4 +54,371 @@ img, video {
   input, select, textarea {
     font-size: 16px !important;
   }
+}
+
+// ============================================
+// Custom Scrollbar Styling
+// ============================================
+* {
+  scrollbar-width: thin;
+  scrollbar-color: $cyber-border $cyber-bg-dark;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $cyber-bg-dark;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $cyber-border;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: color.adjust($cyber-border, $lightness: 10%);
+  }
+}
+
+::-webkit-scrollbar-corner {
+  background: $cyber-bg-dark;
+}
+
+// ============================================
+// Smooth Transitions for Interactive Elements
+// ============================================
+a,
+button,
+[nbButton],
+input,
+select,
+textarea,
+nb-card,
+nb-menu-item,
+.nb-transition {
+  transition: all 0.2s ease;
+}
+
+// ============================================
+// Neon Glow Utility Classes
+// ============================================
+.neon-glow {
+  box-shadow: 0 0 10px rgba($cyber-primary, 0.3),
+              0 0 20px rgba($cyber-primary, 0.2),
+              0 0 30px rgba($cyber-primary, 0.1);
+}
+
+.neon-glow-sm {
+  box-shadow: 0 0 5px rgba($cyber-primary, 0.3),
+              0 0 10px rgba($cyber-primary, 0.2);
+}
+
+.neon-glow-lg {
+  box-shadow: 0 0 15px rgba($cyber-primary, 0.4),
+              0 0 30px rgba($cyber-primary, 0.3),
+              0 0 45px rgba($cyber-primary, 0.2);
+}
+
+.neon-glow-success {
+  box-shadow: 0 0 10px rgba($cyber-success, 0.3),
+              0 0 20px rgba($cyber-success, 0.2);
+}
+
+.neon-glow-danger {
+  box-shadow: 0 0 10px rgba($cyber-danger, 0.3),
+              0 0 20px rgba($cyber-danger, 0.2);
+}
+
+.neon-glow-warning {
+  box-shadow: 0 0 10px rgba($cyber-warning, 0.3),
+              0 0 20px rgba($cyber-warning, 0.2);
+}
+
+// Text glow
+.text-glow {
+  text-shadow: 0 0 10px rgba($cyber-primary, 0.5),
+               0 0 20px rgba($cyber-primary, 0.3);
+}
+
+.text-glow-success {
+  text-shadow: 0 0 10px rgba($cyber-success, 0.5),
+               0 0 20px rgba($cyber-success, 0.3);
+}
+
+.text-glow-danger {
+  text-shadow: 0 0 10px rgba($cyber-danger, 0.5),
+               0 0 20px rgba($cyber-danger, 0.3);
+}
+
+// ============================================
+// Custom Focus States with Glow
+// ============================================
+input:focus,
+select:focus,
+textarea:focus,
+[nbInput]:focus {
+  outline: none;
+  border-color: $cyber-primary !important;
+  box-shadow: 0 0 0 3px rgba($cyber-primary, 0.15),
+              0 0 10px rgba($cyber-primary, 0.2);
+}
+
+button:focus,
+[nbButton]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba($cyber-primary, 0.25),
+              0 0 15px rgba($cyber-primary, 0.3);
+}
+
+// ============================================
+// Enhanced Button Hover Effects
+// ============================================
+[nbButton].appearance-filled.status-primary:hover,
+button[nbButton].appearance-filled.status-primary:hover {
+  box-shadow: 0 0 15px rgba($cyber-primary, 0.5),
+              0 0 30px rgba($cyber-primary, 0.3);
+}
+
+[nbButton].appearance-filled.status-success:hover,
+button[nbButton].appearance-filled.status-success:hover {
+  box-shadow: 0 0 15px rgba($cyber-success, 0.5),
+              0 0 30px rgba($cyber-success, 0.3);
+}
+
+[nbButton].appearance-filled.status-danger:hover,
+button[nbButton].appearance-filled.status-danger:hover {
+  box-shadow: 0 0 15px rgba($cyber-danger, 0.5),
+              0 0 30px rgba($cyber-danger, 0.3);
+}
+
+[nbButton].appearance-filled.status-warning:hover,
+button[nbButton].appearance-filled.status-warning:hover {
+  box-shadow: 0 0 15px rgba($cyber-warning, 0.5),
+              0 0 30px rgba($cyber-warning, 0.3);
+}
+
+[nbButton].appearance-filled.status-info:hover,
+button[nbButton].appearance-filled.status-info:hover {
+  box-shadow: 0 0 15px rgba($cyber-info, 0.5),
+              0 0 30px rgba($cyber-info, 0.3);
+}
+
+// ============================================
+// Card Enhancements
+// ============================================
+nb-card {
+  border: 1px solid $cyber-border;
+  background: linear-gradient(145deg, $cyber-bg-card 0%, color.adjust($cyber-bg-card, $lightness: -3%) 100%);
+
+  &:hover {
+    border-color: rgba($cyber-primary, 0.3);
+    box-shadow: 0 0 20px rgba($cyber-primary, 0.08);
+  }
+
+  nb-card-header {
+    border-bottom: 1px solid $cyber-border;
+  }
+
+  nb-card-footer {
+    border-top: 1px solid $cyber-border;
+  }
+}
+
+// ============================================
+// Toastr Enhancements
+// ============================================
+nb-toast {
+  backdrop-filter: blur(10px);
+  border: none !important;
+  color: $cyber-text !important;
+  font-size: 1.1rem !important;
+
+  .title {
+    color: $cyber-text !important;
+    font-size: 1.1rem !important;
+  }
+
+  .message {
+    color: $cyber-text-muted !important;
+    font-size: 1rem !important;
+  }
+
+  &.status-success {
+    background-color: #1a5535 !important;
+
+    .title, .message {
+      color: #ffffff !important;
+    }
+  }
+
+  &.status-danger {
+    background-color: #551a30 !important;
+  }
+
+  &.status-warning {
+    background-color: #554825 !important;
+  }
+
+  &.status-info {
+    background-color: #1a3555 !important;
+  }
+
+  &.status-primary {
+    background-color: #1a4560 !important;
+  }
+}
+
+// ============================================
+// Dialog Enhancements
+// ============================================
+.cdk-overlay-dark-backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+nb-dialog-container {
+  border: 1px solid $cyber-border;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5),
+              0 0 20px rgba($cyber-primary, 0.1);
+}
+
+// ============================================
+// Selection Color
+// ============================================
+::selection {
+  background: rgba($cyber-primary, 0.3);
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: rgba($cyber-primary, 0.3);
+  color: #ffffff;
+}
+
+// ============================================
+// Link Styling
+// ============================================
+a {
+  color: $cyber-primary;
+  text-decoration: none;
+
+  &:hover {
+    color: $cyber-primary-dark;
+    text-decoration: underline;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba($cyber-primary, 0.25);
+    border-radius: 2px;
+  }
+}
+
+// ============================================
+// Table Enhancements (if using tables)
+// ============================================
+table {
+  border-collapse: collapse;
+  width: 100%;
+
+  th, td {
+    padding: 0.75rem;
+    border-bottom: 1px solid $cyber-border;
+  }
+
+  th {
+    background: $cyber-bg-input;
+    color: $cyber-primary;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  tr:hover td {
+    background: rgba($cyber-primary, 0.05);
+  }
+}
+
+// ============================================
+// Code/Pre Styling
+// ============================================
+code, pre {
+  font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+  background: $cyber-bg-input;
+  border: 1px solid $cyber-border;
+  border-radius: 4px;
+}
+
+code {
+  padding: 0.125rem 0.375rem;
+  color: $cyber-primary;
+}
+
+pre {
+  padding: 1rem;
+  overflow-x: auto;
+
+  code {
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+}
+
+// ============================================
+// Form Label Styling
+// ============================================
+label {
+  color: $cyber-text;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+// ============================================
+// Placeholder Styling
+// ============================================
+::placeholder {
+  color: $cyber-text-muted;
+  opacity: 1;
+}
+
+:-ms-input-placeholder {
+  color: $cyber-text-muted;
+}
+
+::-ms-input-placeholder {
+  color: $cyber-text-muted;
+}
+
+// ============================================
+// Loading/Skeleton Animation
+// ============================================
+@keyframes cyber-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes cyber-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba($cyber-primary, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba($cyber-primary, 0.6);
+  }
+}
+
+.cyber-loading {
+  animation: cyber-pulse 1.5s ease-in-out infinite;
+}
+
+.cyber-glow-animate {
+  animation: cyber-glow 2s ease-in-out infinite;
 }
