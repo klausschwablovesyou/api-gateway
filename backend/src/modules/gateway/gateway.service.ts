@@ -55,11 +55,12 @@ export class GatewayService {
       throw new HttpException('Too many requests. No available IPs.', HTTP_STATUS.TOO_MANY_REQUESTS);
     }
 
-    // Build request URL
-    const url = new URL(api.apiUrl);
+    // Build request URL with placeholder replacement
+    const { url: urlString, remainingParams } = this._buildUrlWithPlaceholders(api.apiUrl, params);
+    const url = new URL(urlString);
 
     if (api.method === HttpMethod.GET || api.method === HttpMethod.DELETE) {
-      for (const [key, value] of Object.entries(params)) {
+      for (const [key, value] of Object.entries(remainingParams)) {
         url.searchParams.append(key, value);
       }
     }
@@ -69,7 +70,7 @@ export class GatewayService {
       url,
       api.method,
       availableIp.ip,
-      api.method === HttpMethod.GET || api.method === HttpMethod.DELETE ? undefined : params
+      api.method === HttpMethod.GET || api.method === HttpMethod.DELETE ? undefined : remainingParams
     );
 
     // Update IP usage
@@ -122,6 +123,30 @@ export class GatewayService {
     // Randomly pick one
     const randomIndex = Math.floor(Math.random() * availableIps.length);
     return availableIps[randomIndex];
+  }
+
+  private _buildUrlWithPlaceholders(
+    apiUrl: string,
+    params: Record<string, string>
+  ): { url: string; remainingParams: Record<string, string> } {
+    const remainingParams = { ...params };
+    let url = apiUrl;
+
+    // Find all {placeholder} patterns in the URL
+    const placeholderRegex = /\{(\w+)\}/g;
+    let match;
+
+    while ((match = placeholderRegex.exec(apiUrl)) !== null) {
+      const placeholder = match[0]; // e.g., {someVariable}
+      const paramName = match[1]; // e.g., someVariable
+
+      if (paramName in remainingParams) {
+        url = url.replace(placeholder, encodeURIComponent(remainingParams[paramName]));
+        delete remainingParams[paramName];
+      }
+    }
+
+    return { url, remainingParams };
   }
 
   private _getPeriodStart(timestamp: number, unit: RequestLimitUnit): number {
