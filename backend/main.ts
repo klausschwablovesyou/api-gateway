@@ -54,6 +54,27 @@ const staticAssetsPath = isDevelopment
 
 application.useStaticAssets(staticAssetsPath);
 
+// SPA fallback middleware - serve index.html for non-API routes that don't match static files
+function createSpaFallbackMiddleware(assetsPath: string) {
+  return async (ctx: { request: { url: { pathname: string } }; response: { status: number; body: string; headers: Headers } }, next: () => Promise<void>) => {
+    await next();
+
+    if (ctx.response.status === 404 && !ctx.request.url.pathname.startsWith('/api')) {
+      try {
+        const indexPath = `${assetsPath}/index.html`;
+        const content = await Deno.readTextFile(indexPath);
+        ctx.response.body = content;
+        ctx.response.headers.set('Content-Type', 'text/html');
+        ctx.response.status = 200;
+      } catch {
+        // If index.html doesn't exist, let it 404
+      }
+    }
+  };
+}
+
+application.addMiddleware(createSpaFallbackMiddleware(staticAssetsPath));
+
 const port = Number(Deno.env.get('PORT') || Deno.env.get('SERVER_PORT')) || 3000;
 const hostname = '0.0.0.0'; // Listen on all interfaces for Docker
 
