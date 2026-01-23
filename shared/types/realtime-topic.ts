@@ -1,5 +1,5 @@
 export enum RealtimeTopic {
   Subscribe = 'Subscribe',
-  NewDetection = 'NewDetection',
-  MemoryUsage = 'MemoryUsage'
+  MemoryUsage = 'MemoryUsage',
+  ConsoleLog = 'ConsoleLog'
 }

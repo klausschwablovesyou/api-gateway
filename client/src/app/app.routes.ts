@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { RoleGuard } from './guards/role.guard';
+import { DefaultRouteGuard } from './guards/default-route.guard';
 import { LayoutComponent } from './layout/layout.component';
 import { UserRole } from '@shared/types/user-role';
 
@@ -20,8 +21,9 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full'
+        pathMatch: 'full',
+        canActivate: [DefaultRouteGuard],
+        children: []
       },
       {
         path: 'dashboard',
@@ -37,13 +39,26 @@ export const routes: Routes = [
       },
       {
         path: 'admin/memory',
-        loadComponent: () => import('./pages/admin/memory/memory.component').then(m => m.MemoryComponent)
+        loadComponent: () => import('./pages/admin/memory/memory.component').then(m => m.MemoryComponent),
+        canActivate: [RoleGuard],
+        data: { roles: [UserRole.SuperAdmin] }
       },
       {
-        path: 'config',
+        path: 'admin/logs',
+        loadComponent: () => import('./pages/admin/logs/logs.component').then(m => m.LogsComponent),
+        canActivate: [RoleGuard],
+        data: { roles: [UserRole.SuperAdmin] }
+      },
+      {
+        path: 'admin/config',
         loadComponent: () => import('./pages/config/config.component').then(m => m.ConfigComponent),
         canActivate: [RoleGuard],
         data: { roles: [UserRole.SuperAdmin] }
+      },
+      {
+        path: 'config',
+        redirectTo: 'admin/config',
+        pathMatch: 'full'
       }
     ]
   },

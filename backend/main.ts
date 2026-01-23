@@ -6,6 +6,7 @@ import { PostgresService } from './src/shared/database/postgres.service.ts';
 import { MigrationRunner } from './src/shared/database/migration-runner.ts';
 import { FileLoggerService } from './src/shared/logger/file-logger.service.ts';
 import { IpSyncService } from './src/shared/services/ip-sync.service.ts';
+import { RealtimeService } from './src/modules/realtime/realtime.service.ts';
 
 // Initialize file logger first (before any console.log calls)
 const fileLogger = new FileLoggerService();
@@ -33,6 +34,10 @@ const application = new DanetApplication();
 application.registerBasePath('/api');
 
 await application.init(AppModule);
+
+// Wire up realtime service to file logger for real-time log broadcasting
+const realtimeService = await application.get(RealtimeService);
+fileLogger.setRealtimeService(realtimeService);
 
 // Sync IPs from database to network interface (for IP rotation)
 const syncIps = Deno.env.get('SYNC_IPS_ON_STARTUP') !== 'false';

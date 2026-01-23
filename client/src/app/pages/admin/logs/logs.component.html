@@ -1,0 +1,35 @@
+<nb-card>
+  <nb-card-header>
+    <div class="header-content">
+      <span>{{ 'Admin.Logs.Title' | translate }}</span>
+      <div class="header-controls">
+        <nb-select [selected]="filterLevel()" (selectedChange)="setFilterLevel($event)" size="small">
+          @for (level of logLevels; track level) {
+            <nb-option [value]="level">{{ level }}</nb-option>
+          }
+        </nb-select>
+        <button nbButton size="small" [status]="autoScroll() ? 'primary' : 'basic'" (click)="toggleAutoScroll()">
+          {{ 'Admin.Logs.AutoScroll' | translate }}
+        </button>
+        <button nbButton size="small" status="danger" ghost (click)="clearLogs()">
+          {{ 'Admin.Logs.Clear' | translate }}
+        </button>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <div class="log-container" #logContainer>
+      @if (filteredLogs().length === 0) {
+        <div class="no-logs">{{ 'Admin.Logs.NoLogs' | translate }}</div>
+      } @else {
+        @for (log of filteredLogs(); track log.id) {
+          <div class="log-entry" [ngClass]="getLogLevelClass(log.level)">
+            <span class="log-timestamp">{{ formatTimestamp(log.timestamp) }}</span>
+            <span class="log-level">[{{ log.level }}]</span>
+            <span class="log-message">{{ log.message }}</span>
+          </div>
+        }
+      }
+    </div>
+  </nb-card-body>
+</nb-card>

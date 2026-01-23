@@ -1,4 +1,12 @@
 import { ensureDir } from 'jsr:@std/fs';
+import { LogEntry } from '@shared/types/log-entry';
+import { LogLevel } from '@shared/types/log-level';
+import { RealtimeTopic } from '@shared/types/realtime-topic';
+import { UserRole } from '@shared/types/user-role';
+
+interface RealtimeServiceInterface {
+  notifyByRole(role: UserRole, topic: RealtimeTopic, data: any): void;
+}
 
 export class FileLoggerService {
   private logFilePath: string;
@@ -10,6 +18,9 @@ export class FileLoggerService {
     info: typeof console.info;
     debug: typeof console.debug;
   };
+  private _realtimeService: RealtimeServiceInterface | null = null;
+  private _logBuffer: LogEntry[] = [];
+  private readonly MAX_BUFFER_SIZE = 100;
 
   constructor(logsDir = 'logs') {
     const today = new Date().toISOString().split('T')[0];
@@ -23,6 +34,14 @@ export class FileLoggerService {
       info: console.info.bind(console),
       debug: console.debug.bind(console),
     };
+  }
+
+  public setRealtimeService(realtimeService: RealtimeServiceInterface): void {
+    this._realtimeService = realtimeService;
+  }
+
+  public getLogBuffer(): LogEntry[] {
+    return [...this._logBuffer];
   }
 
   /**
@@ -43,28 +62,69 @@ export class FileLoggerService {
     console.log = (...args: any[]) => {
       this.originalConsole.log(...args);
       this.writeToFile(this.logFilePath, 'LOG', args);
+      this.broadcastLog(LogLevel.LOG, args);
     };
 
     console.error = (...args: any[]) => {
       this.originalConsole.error(...args);
       this.writeToFile(this.errorLogFilePath, 'ERROR', args);
       this.writeToFile(this.logFilePath, 'ERROR', args);
+      this.broadcastLog(LogLevel.ERROR, args);
     };
 
     console.warn = (...args: any[]) => {
       this.originalConsole.warn(...args);
       this.writeToFile(this.logFilePath, 'WARN', args);
+      this.broadcastLog(LogLevel.WARN, args);
     };
 
     console.info = (...args: any[]) => {
       this.originalConsole.info(...args);
       this.writeToFile(this.logFilePath, 'INFO', args);
+      this.broadcastLog(LogLevel.INFO, args);
     };
 
     console.debug = (...args: any[]) => {
       this.originalConsole.debug(...args);
       this.writeToFile(this.logFilePath, 'DEBUG', args);
+      this.broadcastLog(LogLevel.DEBUG, args);
     };
+  }
+
+  /**
+   * Broadcasts a log entry to SuperAdmin users via realtime service
+   */
+  private broadcastLog(level: LogLevel, args: any[]): void {
+    const message = args
+      .map((arg) => {
+        if (typeof arg === 'object') {
+          try {
+            return JSON.stringify(arg);
+          } catch {
+            return String(arg);
+          }
+        }
+        return String(arg);
+      })
+      .join(' ');
+
+    const logEntry: LogEntry = {
+      id: crypto.randomUUID(),
+      timestamp: new Date().toISOString(),
+      level,
+      message,
+    };
+
+    // Add to buffer (keep most recent entries)
+    this._logBuffer.push(logEntry);
+    if (this._logBuffer.length > this.MAX_BUFFER_SIZE) {
+      this._logBuffer.shift();
+    }
+
+    // Broadcast to SuperAdmin users if realtime service is available
+    if (this._realtimeService) {
+      this._realtimeService.notifyByRole(UserRole.SuperAdmin, RealtimeTopic.ConsoleLog, logEntry);
+    }
   }
 
   /**

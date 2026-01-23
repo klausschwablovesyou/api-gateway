@@ -24,6 +24,9 @@
     "@shared/types/user-role": "../shared/types/user-role.ts",
     "@shared/types/jwt-payload": "../shared/types/jwt-payload.ts",
     "@shared/types/realtime-topic": "../shared/types/realtime-topic.ts",
+    "@shared/types/client-info": "../shared/types/client-info.ts",
+    "@shared/types/log-entry": "../shared/types/log-entry.ts",
+    "@shared/types/log-level": "../shared/types/log-level.ts",
     "@shared/types/request-limit-unit": "../shared/types/request-limit-unit.ts",
     "@shared/types/http-method": "../shared/types/http-method.ts",
     "@shared/types/http-status-code": "./src/shared/types/http-status-code.ts"

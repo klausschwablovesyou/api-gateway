@@ -11,6 +11,8 @@
     "Logout": "Kijelentkezés",
     "Admin": {
       "Title": "Admin",
+      "Logs": "Konzol Naplók",
+      "Config": "Beállítások",
       "MemoryUsage": "Memóriahasználat"
     }
   },
@@ -127,6 +129,12 @@
       "Database": "Adatbázis Kapcsolatok",
       "Clients": "kliens",
       "Connections": "kapcsolat"
+    },
+    "Logs": {
+      "Title": "Konzol Naplók",
+      "NoLogs": "Még nincsenek naplók. A naplók valós időben jelennek meg itt.",
+      "Clear": "Törlés",
+      "AutoScroll": "Auto-görgetés"
     }
   },
   "ApiManager": {

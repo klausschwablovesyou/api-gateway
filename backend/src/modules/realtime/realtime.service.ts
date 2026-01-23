@@ -1,11 +1,7 @@
 import { Injectable } from '@danet/core';
+import { ClientInfo } from '@shared/types/client-info';
 import { RealtimeTopic } from '@shared/types/realtime-topic';
 import { UserRole } from '@shared/types/user-role';
-
-interface ClientInfo {
-  socket: WebSocket;
-  userRole: UserRole;
-}
 
 // Estimated memory per component (in bytes)
 const ESTIMATED_MEMORY_PER_TELEGRAM_CLIENT = 5 * 1024 * 1024; // 5MB per active Telegram client

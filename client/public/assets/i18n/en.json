@@ -11,6 +11,8 @@
     "Logout": "Logout",
     "Admin": {
       "Title": "Admin",
+      "Logs": "Console Logs",
+      "Config": "Configuration",
       "MemoryUsage": "Memory Usage"
     }
   },
@@ -127,6 +129,12 @@
       "Database": "Database Connections",
       "Clients": "clients",
       "Connections": "connections"
+    },
+    "Logs": {
+      "Title": "Console Logs",
+      "NoLogs": "No logs yet. Logs will appear here in real-time.",
+      "Clear": "Clear",
+      "AutoScroll": "Auto-scroll"
     }
   },
   "ApiManager": {
