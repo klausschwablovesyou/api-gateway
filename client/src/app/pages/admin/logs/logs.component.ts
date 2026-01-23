@@ -51,6 +51,7 @@ export class LogsComponent implements OnInit, OnDestroy, AfterViewChecked {
   constructor(private _realtimeService: RealtimeService) {}
 
   public ngOnInit(): void {
+    this._realtimeService.connect();
     this._unsubscribe = this._realtimeService.on(RealtimeTopic.ConsoleLog, (logEntry: LogEntry) => {
       this.logs.update(logs => {
         const newLogs = [...logs, logEntry];
@@ -73,6 +74,7 @@ export class LogsComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   public ngOnDestroy(): void {
+    this._realtimeService.disconnect();
     if (this._unsubscribe) {
       this._unsubscribe();
       this._unsubscribe = null;

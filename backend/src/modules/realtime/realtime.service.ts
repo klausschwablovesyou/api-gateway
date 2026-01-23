@@ -16,7 +16,6 @@ export class RealtimeService {
   private _dbConnectionCount: number = 5; // Default pool size
 
   constructor() {
-    this._startMemoryBroadcast();
   }
 
   public setTelegramStatsProvider(provider: () => { totalClients: number; activeClients: number }): void {
