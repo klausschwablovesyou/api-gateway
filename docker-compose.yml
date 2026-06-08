@@ -24,7 +24,7 @@ services:
       DB_POOL_SIZE: ${DB_POOL_SIZE}
     volumes:
       - ./backend/logs:/app/backend/logs
-    restart: unless-stopped
+    restart: "no"
     labels:
       # Coolify will handle HTTPS with its built-in reverse proxy
       - "coolify.managed=true"
