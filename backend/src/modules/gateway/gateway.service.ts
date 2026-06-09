@@ -28,35 +28,50 @@ export class GatewayService {
     signature: string,
     params: Record<string, string>
   ): Promise<unknown> {
+    console.log('[GatewayService] forwardRequest called for:', apiName);
+
     const api = await this._apiRepository.findByName(apiName);
+    console.log('[GatewayService] API lookup result:', api ? `found (id: ${api.id})` : 'NOT FOUND');
 
     if (!api) {
       throw new HttpException('API not found', HTTP_STATUS.NOT_FOUND);
     }
 
+    console.log('[GatewayService] Checking public key...');
+    console.log('[GatewayService] Expected:', api.publicKey);
+    console.log('[GatewayService] Received:', publicKey);
+
     if (api.publicKey !== publicKey) {
+      console.warn('[GatewayService] Public key mismatch');
       throw new HttpException('Invalid API key', HTTP_STATUS.UNAUTHORIZED);
     }
 
+    console.log('[GatewayService] Validating signature...');
     const isValidSignature = await this._apiKeyService.validateSignature(
       apiName,
       signature,
       api.privateKey
     );
+    console.log('[GatewayService] Signature valid:', isValidSignature);
 
     if (!isValidSignature) {
+      console.warn('[GatewayService] Invalid signature');
       throw new HttpException('Invalid signature', HTTP_STATUS.UNAUTHORIZED);
     }
 
-    // Get available IP for this API
+    console.log('[GatewayService] Getting available IP...');
     const availableIp = await this._getAvailableIp(api);
+    console.log('[GatewayService] Available IP:', availableIp ? availableIp.ip : 'NONE');
 
     if (!availableIp) {
       throw new HttpException('Too many requests. No available IPs.', HTTP_STATUS.TOO_MANY_REQUESTS);
     }
 
-    // Build request URL with placeholder replacement
+    console.log('[GatewayService] Building URL from:', api.apiUrl, 'with params:', params);
     const { url: urlString, remainingParams } = this._buildUrlWithPlaceholders(api.apiUrl, params);
+    console.log('[GatewayService] Built URL:', urlString);
+    console.log('[GatewayService] Remaining params:', remainingParams);
+
     const url = new URL(urlString);
 
     if (api.method === HttpMethod.GET || api.method === HttpMethod.DELETE) {
@@ -65,7 +80,9 @@ export class GatewayService {
       }
     }
 
-    // Make request with local IP binding
+    console.log('[GatewayService] Final URL:', url.toString());
+    console.log('[GatewayService] Making request with local IP:', availableIp.ip);
+
     const result = await this._makeRequestWithLocalIp(
       url,
       api.method,
@@ -73,7 +90,7 @@ export class GatewayService {
       api.method === HttpMethod.GET || api.method === HttpMethod.DELETE ? undefined : remainingParams
     );
 
-    // Update IP usage
+    console.log('[GatewayService] Request succeeded, updating IP usage...');
     await this._updateIpUsage(availableIp, api);
 
     console.log(`[Gateway] ${api.method} ${apiName} -> (IP: ${availableIp.ip}) -> ${url.toString()}`);
@@ -83,6 +100,7 @@ export class GatewayService {
 
   private async _getAvailableIp(api: Api): Promise<Ip | null> {
     const allIps = await this._ipRepository.findAll();
+    console.log('[GatewayService] Total IPs in DB:', allIps.length);
 
     if (allIps.length === 0) {
       return null;
@@ -96,7 +114,6 @@ export class GatewayService {
       const usage = await this._ipUsageRepository.findByIpAndApi(ip.id, api.id);
 
       if (!usage) {
-        // Never used for this API - available
         availableIps.push(ip);
         continue;
       }
@@ -104,23 +121,24 @@ export class GatewayService {
       const usagePeriodStart = this._getPeriodStart(Number(usage.lastUsedAt), api.requestLimitUnit);
 
       if (usagePeriodStart < periodStart) {
-        // Last used in a previous period - available (counter will be reset)
         availableIps.push(ip);
         continue;
       }
 
       if (usagePeriodStart === periodStart && Number(usage.requestLimitCounter) < api.requestLimit) {
-        // Same period but under the limit - available
         availableIps.push(ip);
         continue;
       }
+
+      console.log(`[GatewayService] IP ${ip.ip} exhausted for this period (counter: ${usage.requestLimitCounter}/${api.requestLimit})`);
     }
+
+    console.log('[GatewayService] Available IPs:', availableIps.length);
 
     if (availableIps.length === 0) {
       return null;
     }
 
-    // Randomly pick one
     const randomIndex = Math.floor(Math.random() * availableIps.length);
     return availableIps[randomIndex];
   }
@@ -132,13 +150,12 @@ export class GatewayService {
     const remainingParams = { ...params };
     let url = apiUrl;
 
-    // Find all {placeholder} patterns in the URL
     const placeholderRegex = /\{(\w+)\}/g;
     let match;
 
     while ((match = placeholderRegex.exec(apiUrl)) !== null) {
-      const placeholder = match[0]; // e.g., {someVariable}
-      const paramName = match[1]; // e.g., someVariable
+      const placeholder = match[0];
+      const paramName = match[1];
 
       if (paramName in remainingParams) {
         url = url.replace(placeholder, encodeURIComponent(remainingParams[paramName]));
@@ -176,7 +193,6 @@ export class GatewayService {
     const usage = await this._ipUsageRepository.findByIpAndApi(ip.id, api.id);
 
     if (!usage) {
-      // Create new usage record
       await this._ipUsageRepository.create({
         ipId: ip.id,
         apiId: api.id,
@@ -189,10 +205,8 @@ export class GatewayService {
     const usagePeriodStart = this._getPeriodStart(Number(usage.lastUsedAt), api.requestLimitUnit);
 
     if (usagePeriodStart < periodStart) {
-      // New period - reset counter
       await this._ipUsageRepository.upsert(ip.id, api.id, now, 1);
     } else {
-      // Same period - increment counter
       await this._ipUsageRepository.upsert(ip.id, api.id, now, Number(usage.requestLimitCounter) + 1);
     }
   }
@@ -203,6 +217,8 @@ export class GatewayService {
     localAddress: string,
     body?: Record<string, string>
   ): Promise<unknown> {
+    console.log('[GatewayService] _makeRequestWithLocalIp:', method, url.toString(), 'via', localAddress);
+
     const client = Deno.createHttpClient({
       localAddress: localAddress,
     });
@@ -219,6 +235,7 @@ export class GatewayService {
       }
 
       const response = await fetch(url.toString(), fetchOptions);
+      console.log('[GatewayService] Response status:', response.status, response.statusText);
 
       if (!response.ok) {
         throw new HttpException(
@@ -229,6 +246,7 @@ export class GatewayService {
 
       const contentType = response.headers.get('content-type') || '';
       const data = await response.text();
+      console.log('[GatewayService] Response body:', data);
 
       if (contentType.includes('application/json')) {
         try {
@@ -240,6 +258,7 @@ export class GatewayService {
         return { data };
       }
     } catch (err) {
+      console.error('[GatewayService] Request error:', err);
       if (err instanceof HttpException) {
         throw err;
       }
