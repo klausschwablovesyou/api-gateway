@@ -1,7 +1,9 @@
 <code #codeEl>import hmac
 import hashlib
 import base64
-import requests
+import json
+import urllib.request
+import urllib.parse
 
 # API Configuration
 API_NAME = "{{ api.name }}"
@@ -20,21 +22,16 @@ def call_api(params: dict = None) -> dict:
     """Call the gateway API with proper authentication."""
     signature = generate_signature(API_NAME, PRIVATE_KEY)
 
-    headers = {{ '{' }}
-        "x-api-public-key": PUBLIC_KEY,
-        "x-api-signature": signature
-    {{ '}' }}
-
     params = params or {{ '{' }}{{ '}' }}
     params["apiName"] = API_NAME
 
-    response = requests.{{ api.method | lowercase }}(
-        GATEWAY_URL,
-        headers=headers,
-        params=params
-    )
+    url = GATEWAY_URL + "?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, method="{{ api.method }}")
+    req.add_header("x-api-public-key", PUBLIC_KEY)
+    req.add_header("x-api-signature", signature)
 
-    return response.json()
+    with urllib.request.urlopen(req) as response:
+        return json.loads(response.read().decode('utf-8'))
 
 # Example usage
 if __name__ == "__main__":
