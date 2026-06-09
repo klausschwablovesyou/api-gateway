@@ -89,6 +89,13 @@ export class IpSyncService {
     const gateway = this._getGateway(ip);
     const tableId = this._getTableId(ip);
 
+    // Make the gateway reachable on-link within the table (needed because IP is added as /32)
+    const gwRouteResult = await this._runIpCommand(['route', 'add', gateway, 'dev', networkInterface, 'table', String(tableId)]);
+    if (!gwRouteResult.success && !gwRouteResult.stderr.includes('File exists')) {
+      console.error(`[IpSync] ✗ Failed to add gateway route for ${ip}: ${gwRouteResult.stderr.trim()}`);
+      return false;
+    }
+
     const routeResult = await this._runIpCommand(['route', 'add', 'default', 'via', gateway, 'src', ip, 'table', String(tableId)]);
     if (!routeResult.success && !routeResult.stderr.includes('File exists')) {
       console.error(`[IpSync] ✗ Failed to add route for ${ip}: ${routeResult.stderr.trim()}`);
@@ -148,6 +155,7 @@ export class IpSyncService {
 
     await this._runIpCommand(['rule', 'del', 'from', ip, 'table', String(tableId)]);
     await this._runIpCommand(['route', 'del', 'default', 'via', gateway, 'src', ip, 'table', String(tableId)]);
+    await this._runIpCommand(['route', 'del', gateway, 'dev', networkInterface, 'table', String(tableId)]);
 
     const addrResult = await this._runIpCommand(['addr', 'del', `${ip}/32`, 'dev', networkInterface]);
 
