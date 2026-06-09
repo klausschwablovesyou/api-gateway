@@ -4,4 +4,4 @@ export const IPV6_PATTERN = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::(?:[0
 
 export const IP_PATTERN = new RegExp(`(${IPV4_PATTERN.source})|(${IPV6_PATTERN.source})`);
 
-export const URL_PATTERN = /^https?:\/\/[\w\-]+(\.[\w\-]+)*(:\d+)?(\/[^\s]*)?$/;
+export const URL_PATTERN = /^https?:\/\/[\w\-]+(\.[\w\-]+)*(:\d+)?([/?#][^\s]*)?$/;

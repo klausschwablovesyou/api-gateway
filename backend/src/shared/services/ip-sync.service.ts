@@ -64,7 +64,7 @@ export class IpSyncService {
       return true;
     } else {
       const stderr = new TextDecoder().decode(result.stderr);
-      if (stderr.includes('RTNETLINK answers: File exists')) {
+      if (stderr.includes('RTNETLINK answers: File exists') || stderr.includes('Address already assigned')) {
         console.log(`[IpSync] ✓ Already exists: ${ip}`);
         return true;
       } else {
