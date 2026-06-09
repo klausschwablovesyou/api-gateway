@@ -25,6 +25,8 @@ services:
     volumes:
       - ./backend/logs:/app/backend/logs
     restart: unless-stopped
+    expose:
+      - "${PORT}"
     labels:
       - "coolify.managed=true"
       - "traefik.enable=true"
