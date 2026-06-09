@@ -25,11 +25,8 @@ services:
     volumes:
       - ./backend/logs:/app/backend/logs
     restart: unless-stopped
-    expose:
-      - "${PORT}"
     labels:
+      # Coolify will handle HTTPS with its built-in reverse proxy
       - "coolify.managed=true"
-      - "traefik.enable=true"
-      - "traefik.http.services.backend-gposh1qlnugkhjpqyku1vpw5.loadbalancer.server.url=http://10.0.1.1:3000"
     stdin_open: true
     tty: true
