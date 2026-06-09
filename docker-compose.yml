@@ -24,9 +24,10 @@ services:
       DB_POOL_SIZE: ${DB_POOL_SIZE}
     volumes:
       - ./backend/logs:/app/backend/logs
-    restart: "no"
+    restart: unless-stopped
     labels:
-      # Coolify will handle HTTPS with its built-in reverse proxy
       - "coolify.managed=true"
+      - "traefik.enable=true"
+      - "traefik.http.services.api-gateway.loadbalancer.server.url=http://172.17.0.1:3000"
     stdin_open: true
     tty: true
