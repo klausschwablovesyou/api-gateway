@@ -18,17 +18,17 @@ const PUBLIC_KEY: &amp;str = "{{ api.publicKey }}";
 const PRIVATE_KEY: &amp;str = "{{ api.privateKey }}";
 const GATEWAY_URL: &amp;str = "{{ gatewayUrl }}";
 
-fn generate_signature(api_name: &amp;str, private_key: &amp;str) -> String {
+fn generate_signature(api_name: &amp;str, private_key: &amp;str) -> String {{ '{' }}
     let key_bytes = general_purpose::STANDARD
         .decode(private_key)
         .expect("Invalid base64 private key");
     let mut mac = HmacSha256::new_from_slice(&amp;key_bytes).expect("Invalid key length");
     mac.update(api_name.as_bytes());
     general_purpose::STANDARD.encode(mac.finalize().into_bytes())
-}
+{{ '}' }}
 
 #[tokio::main]
-async fn main() -> Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+async fn main() -> Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {{ '{' }}
     let signature = generate_signature(API_NAME, PRIVATE_KEY);
 
     let client = Client::new();
@@ -41,8 +41,8 @@ async fn main() -> Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
         .await?;
 
     let result: serde_json::Value = response.json().await?;
-    println!("{}", result);
+    println!("{{ '{' }}{{ '}' }}", result);
 
     Ok(())
-}
+{{ '}' }}
 </code>
