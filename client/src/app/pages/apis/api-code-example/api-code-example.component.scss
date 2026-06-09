@@ -1,3 +1,13 @@
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h5 {
+    margin: 0;
+  }
+}
+
 .code-example-dialog {
   width: 700px;
   max-width: 90vw;
@@ -11,6 +21,12 @@
 }
 
 pre {
+  app-code-py,
+  app-code-rs {
+    display: contents;
+  }
+
+
   background-color: var(--color-basic-800);
   border-radius: 4px;
   padding: 1rem;

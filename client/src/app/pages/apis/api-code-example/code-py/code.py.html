@@ -1,0 +1,43 @@
+<code #codeEl>import hmac
+import hashlib
+import base64
+import requests
+
+# API Configuration
+API_NAME = "{{ api.name }}"
+PUBLIC_KEY = "{{ api.publicKey }}"
+PRIVATE_KEY = "{{ api.privateKey }}"
+GATEWAY_URL = "{{ gatewayUrl }}"
+
+def generate_signature(api_name: str, private_key: str) -> str:
+    """Generate HMAC-SHA256 signature for API authentication."""
+    message = api_name.encode('utf-8')
+    key = base64.b64decode(private_key)
+    signature = hmac.new(key, message, hashlib.sha256).digest()
+    return base64.b64encode(signature).decode('utf-8')
+
+def call_api(params: dict = None) -> dict:
+    """Call the gateway API with proper authentication."""
+    signature = generate_signature(API_NAME, PRIVATE_KEY)
+
+    headers = {{ '{' }}
+        "x-api-public-key": PUBLIC_KEY,
+        "x-api-signature": signature
+    {{ '}' }}
+
+    params = params or {{ '{' }}{{ '}' }}
+    params["apiName"] = API_NAME
+
+    response = requests.{{ api.method | lowercase }}(
+        GATEWAY_URL,
+        headers=headers,
+        params=params
+    )
+
+    return response.json()
+
+# Example usage
+if __name__ == "__main__":
+    result = call_api({{ '{' }}"example_param": "value"{{ '}' }})
+    print(result)
+</code>

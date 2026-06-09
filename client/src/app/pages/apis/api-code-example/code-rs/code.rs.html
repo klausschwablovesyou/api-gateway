@@ -1,0 +1,48 @@
+<code #codeEl>// Cargo.toml dependencies:
+// base64 = "0.22"
+// hmac = "0.12"
+// reqwest = {{ '{' }} version = "0.12", features = ["json"] {{ '}' }}
+// sha2 = "0.10"
+// serde_json = "1"
+// tokio = {{ '{' }} version = "1", features = ["full"] {{ '}' }}
+
+use base64::{{ '{' }}engine::general_purpose, Engine as _{{ '}' }};
+use hmac::{{ '{' }}Hmac, Mac{{ '}' }};
+use reqwest::Client;
+use sha2::Sha256;
+
+type HmacSha256 = Hmac&lt;Sha256&gt;;
+
+const API_NAME: &amp;str = "{{ api.name }}";
+const PUBLIC_KEY: &amp;str = "{{ api.publicKey }}";
+const PRIVATE_KEY: &amp;str = "{{ api.privateKey }}";
+const GATEWAY_URL: &amp;str = "{{ gatewayUrl }}";
+
+fn generate_signature(api_name: &amp;str, private_key: &amp;str) -> String {
+    let key_bytes = general_purpose::STANDARD
+        .decode(private_key)
+        .expect("Invalid base64 private key");
+    let mut mac = HmacSha256::new_from_slice(&amp;key_bytes).expect("Invalid key length");
+    mac.update(api_name.as_bytes());
+    general_purpose::STANDARD.encode(mac.finalize().into_bytes())
+}
+
+#[tokio::main]
+async fn main() -> Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let signature = generate_signature(API_NAME, PRIVATE_KEY);
+
+    let client = Client::new();
+    let response = client
+        .{{ api.method | lowercase }}(GATEWAY_URL)
+        .header("x-api-public-key", PUBLIC_KEY)
+        .header("x-api-signature", &amp;signature)
+        .query(&amp;[("apiName", API_NAME), ("example_param", "value")])
+        .send()
+        .await?;
+
+    let result: serde_json::Value = response.json().await?;
+    println!("{}", result);
+
+    Ok(())
+}
+</code>

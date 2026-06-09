@@ -192,7 +192,7 @@
       "Warning": "Mentse el ezeket a kulcsokat biztonságosan. A privát kulcs nem lesz többé megjeleníthető."
     },
     "CodeExample": {
-      "Title": "Python kód példa",
+      "Title": "Kód példa",
       "Warning": "Ez a kód tartalmazza a privát kulcsát. Ne ossza meg nyilvánosan.",
       "Copy": "Másolás vágólapra",
       "Close": "Bezárás"

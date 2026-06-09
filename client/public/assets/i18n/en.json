@@ -192,7 +192,7 @@
       "Warning": "Save these keys securely. The private key will not be shown again."
     },
     "CodeExample": {
-      "Title": "Python Code Example",
+      "Title": "Code Example",
       "Warning": "This code contains your private key. Do not share it publicly.",
       "Copy": "Copy to Clipboard",
       "Close": "Close"
