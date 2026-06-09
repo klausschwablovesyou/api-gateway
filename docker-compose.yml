@@ -30,6 +30,6 @@ services:
     labels:
       - "coolify.managed=true"
       - "traefik.enable=true"
-      - "traefik.http.services.api-gateway.loadbalancer.server.url=http://172.17.0.1:3000"
+      - "traefik.http.services.api-gateway.loadbalancer.server.url=http://172.17.0.1:${PORT}"
     stdin_open: true
     tty: true
