@@ -7,6 +7,7 @@ import { Api } from '@shared/models/api.model';
   selector: 'app-code-rs',
   templateUrl: './code.rs.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  preserveWhitespaces: true,
   imports: [LowerCasePipe]
 })
 export class CodeRsComponent {

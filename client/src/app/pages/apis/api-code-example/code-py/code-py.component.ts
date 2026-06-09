@@ -7,6 +7,7 @@ import { Api } from '@shared/models/api.model';
   selector: 'app-code-py',
   templateUrl: './code.py.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  preserveWhitespaces: true,
   imports: [LowerCasePipe]
 })
 export class CodePyComponent {
