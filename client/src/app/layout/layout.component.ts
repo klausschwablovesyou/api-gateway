@@ -118,6 +118,11 @@ export class LayoutComponent implements OnInit, OnDestroy {
             link: '/admin/logs'
           },
           {
+            title: this._translateService.instant('Menu.Admin.RequestErrors'),
+            icon: 'alert-triangle-outline',
+            link: '/admin/request-errors'
+          },
+          {
             title: this._translateService.instant('Menu.Admin.Config'),
             icon: 'settings-outline',
             link: '/admin/config'

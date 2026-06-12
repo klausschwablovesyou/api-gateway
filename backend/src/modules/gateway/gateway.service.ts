@@ -1,17 +1,17 @@
-import { Injectable, HttpException, HTTP_STATUS } from '@danet/core';
+import { Injectable, HttpException } from '@danet/core';
+import { HttpStatusCode } from '../../shared/types/http-status-code.ts';
 import { ApiRepository } from '../../shared/repositories/api.repository.ts';
 import { IpRepository } from '../../shared/repositories/ip.repository.ts';
 import { IpUsageRepository } from '../../shared/repositories/ip-usage.repository.ts';
 import { ApiKeyService } from '../../shared/services/api-key.service.ts';
+import { RequestLogRepository } from '../../shared/repositories/request-log.repository.ts';
+import { RealtimeService } from '../realtime/realtime.service.ts';
+import { RealtimeTopic } from '@shared/types/realtime-topic.ts';
+import { UserRole } from '@shared/types/user-role.ts';
 import { HttpMethod } from '@shared/types/http-method.ts';
 import { RequestLimitUnit } from '@shared/types/request-limit-unit.ts';
 import { Api } from '@shared/models/api.model.ts';
 import { Ip } from '@shared/models/ip.model.ts';
-import { IpUsage } from '@shared/models/ip-usage.model.ts';
-
-interface IpWithUsage extends Ip {
-  usage: IpUsage | null;
-}
 
 @Injectable()
 export class GatewayService {
@@ -19,83 +19,104 @@ export class GatewayService {
     private readonly _apiRepository: ApiRepository,
     private readonly _ipRepository: IpRepository,
     private readonly _ipUsageRepository: IpUsageRepository,
-    private readonly _apiKeyService: ApiKeyService
+    private readonly _apiKeyService: ApiKeyService,
+    private readonly _requestLogRepository: RequestLogRepository,
+    private readonly _realtimeService: RealtimeService
   ) {}
 
-  async forwardRequest(
+  public async forwardRequest(
     apiName: string,
     publicKey: string,
     signature: string,
     params: Record<string, string>
   ): Promise<unknown> {
-    console.log('[GatewayService] forwardRequest called for:', apiName);
+    let currentApiId: string | null = null;
+    let currentIpId: string | null = null;
 
-    const api = await this._apiRepository.findByName(apiName);
-    console.log('[GatewayService] API lookup result:', api ? `found (id: ${api.id})` : 'NOT FOUND');
+    try {
+      console.log('[GatewayService] forwardRequest called for:', apiName);
 
-    if (!api) {
-      throw new HttpException('API not found', HTTP_STATUS.NOT_FOUND);
-    }
+      const api = await this._apiRepository.findByName(apiName);
+      console.log('[GatewayService] API lookup result:', api ? `found (id: ${api.id})` : 'NOT FOUND');
 
-    console.log('[GatewayService] Checking public key...');
-    console.log('[GatewayService] Expected:', api.publicKey);
-    console.log('[GatewayService] Received:', publicKey);
-
-    if (api.publicKey !== publicKey) {
-      console.warn('[GatewayService] Public key mismatch');
-      throw new HttpException('Invalid API key', HTTP_STATUS.UNAUTHORIZED);
-    }
-
-    console.log('[GatewayService] Validating signature...');
-    const isValidSignature = await this._apiKeyService.validateSignature(
-      apiName,
-      signature,
-      api.privateKey
-    );
-    console.log('[GatewayService] Signature valid:', isValidSignature);
-
-    if (!isValidSignature) {
-      console.warn('[GatewayService] Invalid signature');
-      throw new HttpException('Invalid signature', HTTP_STATUS.UNAUTHORIZED);
-    }
-
-    console.log('[GatewayService] Getting available IP...');
-    const availableIp = await this._getAvailableIp(api);
-    console.log('[GatewayService] Available IP:', availableIp ? availableIp.ip : 'NONE');
-
-    if (!availableIp) {
-      throw new HttpException('Too many requests. No available IPs.', HTTP_STATUS.TOO_MANY_REQUESTS);
-    }
-
-    console.log('[GatewayService] Building URL from:', api.apiUrl, 'with params:', params);
-    const { url: urlString, remainingParams } = this._buildUrlWithPlaceholders(api.apiUrl, params);
-    console.log('[GatewayService] Built URL:', urlString);
-    console.log('[GatewayService] Remaining params:', remainingParams);
-
-    const url = new URL(urlString);
-
-    if (api.method === HttpMethod.GET || api.method === HttpMethod.DELETE) {
-      for (const [key, value] of Object.entries(remainingParams)) {
-        url.searchParams.append(key, value);
+      if (!api) {
+        throw new HttpException('API not found', HttpStatusCode.NotFound);
       }
+      currentApiId = api.id;
+
+      console.log('[GatewayService] Checking public key...');
+      console.log('[GatewayService] Expected:', api.publicKey);
+      console.log('[GatewayService] Received:', publicKey);
+
+      if (api.publicKey !== publicKey) {
+        console.warn('[GatewayService] Public key mismatch');
+        throw new HttpException('Invalid API key', HttpStatusCode.Unauthorized);
+      }
+
+      console.log('[GatewayService] Validating signature...');
+      const isValidSignature = await this._apiKeyService.validateSignature(
+        apiName,
+        signature,
+        api.privateKey
+      );
+      console.log('[GatewayService] Signature valid:', isValidSignature);
+
+      if (!isValidSignature) {
+        console.warn('[GatewayService] Invalid signature');
+        throw new HttpException('Invalid signature', HttpStatusCode.Unauthorized);
+      }
+
+      console.log('[GatewayService] Getting available IP...');
+      const availableIp = await this._getAvailableIp(api);
+      console.log('[GatewayService] Available IP:', availableIp ? availableIp.ip : 'NONE');
+
+      if (!availableIp) {
+        throw new HttpException('Too many requests. No available IPs.', HttpStatusCode.TooManyRequests);
+      }
+      currentIpId = availableIp.id;
+
+      console.log('[GatewayService] Building URL from:', api.apiUrl, 'with params:', params);
+      const { url: urlString, remainingParams } = this._buildUrlWithPlaceholders(api.apiUrl, params);
+      console.log('[GatewayService] Built URL:', urlString);
+      console.log('[GatewayService] Remaining params:', remainingParams);
+
+      const url = new URL(urlString);
+
+      if (api.method === HttpMethod.GET || api.method === HttpMethod.DELETE) {
+        for (const [key, value] of Object.entries(remainingParams)) {
+          url.searchParams.append(key, value);
+        }
+      }
+
+      console.log('[GatewayService] Final URL:', url.toString());
+      console.log('[GatewayService] Making request with local IP:', availableIp.ip);
+
+      const result = await this._makeRequestWithLocalIp(
+        url,
+        api.method,
+        availableIp.ip,
+        api.method === HttpMethod.GET || api.method === HttpMethod.DELETE ? undefined : remainingParams
+      );
+
+      console.log('[GatewayService] Request succeeded, updating IP usage...');
+      await this._updateIpUsage(availableIp, api);
+
+      console.log(`[Gateway] ${api.method} ${apiName} -> (IP: ${availableIp.ip}) -> ${url.toString()}`);
+
+      return result;
+    } catch (err) {
+      if (err instanceof HttpException) {
+        await this._requestLogRepository.create({
+          apiId: currentApiId,
+          ipId: currentIpId,
+          errorMessage: err.message,
+          statusCode: Number(err.status),
+          occurredAt: Date.now(),
+        });
+        this._realtimeService.notifyByRole(UserRole.SuperAdmin, RealtimeTopic.RequestError);
+      }
+      throw err;
     }
-
-    console.log('[GatewayService] Final URL:', url.toString());
-    console.log('[GatewayService] Making request with local IP:', availableIp.ip);
-
-    const result = await this._makeRequestWithLocalIp(
-      url,
-      api.method,
-      availableIp.ip,
-      api.method === HttpMethod.GET || api.method === HttpMethod.DELETE ? undefined : remainingParams
-    );
-
-    console.log('[GatewayService] Request succeeded, updating IP usage...');
-    await this._updateIpUsage(availableIp, api);
-
-    console.log(`[Gateway] ${api.method} ${apiName} -> (IP: ${availableIp.ip}) -> ${url.toString()}`);
-
-    return result;
   }
 
   private async _getAvailableIp(api: Api): Promise<Ip | null> {

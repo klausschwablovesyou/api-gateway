@@ -12,6 +12,7 @@
     "Admin": {
       "Title": "Admin",
       "Logs": "Console Logs",
+      "RequestErrors": "Request Errors",
       "Config": "Configuration",
       "MemoryUsage": "Memory Usage"
     }
@@ -135,6 +136,19 @@
       "NoLogs": "No logs yet. Logs will appear here in real-time.",
       "Clear": "Clear",
       "AutoScroll": "Auto-scroll"
+    },
+    "RequestErrors": {
+      "Title": "Request Errors",
+      "NoEntries": "No errors yet. Errors will appear here in real-time.",
+      "Clear": "Clear",
+      "AutoScroll": "Auto-scroll",
+      "Columns": {
+        "Time": "Time",
+        "Status": "Status",
+        "Message": "Message",
+        "ApiId": "API ID",
+        "IpId": "IP ID"
+      }
     }
   },
   "ApiManager": {

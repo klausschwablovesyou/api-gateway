@@ -12,6 +12,7 @@
     "Admin": {
       "Title": "Admin",
       "Logs": "Konzol Naplók",
+      "RequestErrors": "Kérés Hibák",
       "Config": "Beállítások",
       "MemoryUsage": "Memóriahasználat"
     }
@@ -135,6 +136,19 @@
       "NoLogs": "Még nincsenek naplók. A naplók valós időben jelennek meg itt.",
       "Clear": "Törlés",
       "AutoScroll": "Auto-görgetés"
+    },
+    "RequestErrors": {
+      "Title": "Kérés Hibák",
+      "NoEntries": "Még nincsenek hibák. A hibák valós időben jelennek meg itt.",
+      "Clear": "Törlés",
+      "AutoScroll": "Auto-görgetés",
+      "Columns": {
+        "Time": "Időpont",
+        "Status": "Státusz",
+        "Message": "Üzenet",
+        "ApiId": "API azonosító",
+        "IpId": "IP azonosító"
+      }
     }
   },
   "ApiManager": {

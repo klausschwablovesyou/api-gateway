@@ -50,6 +50,12 @@ export const routes: Routes = [
         data: { roles: [UserRole.SuperAdmin] }
       },
       {
+        path: 'admin/request-errors',
+        loadComponent: () => import('./pages/admin/request-errors/request-errors.component').then(m => m.RequestErrorsComponent),
+        canActivate: [RoleGuard],
+        data: { roles: [UserRole.SuperAdmin] }
+      },
+      {
         path: 'admin/config',
         loadComponent: () => import('./pages/config/config.component').then(m => m.ConfigComponent),
         canActivate: [RoleGuard],

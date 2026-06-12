@@ -1,0 +1,45 @@
+<nb-card>
+  <nb-card-header>
+    <div class="header-content">
+      <span>{{ 'Admin.RequestErrors.Title' | translate }}</span>
+      <div class="header-controls">
+        <button nbButton size="small" [status]="autoScroll() ? 'primary' : 'basic'" (click)="toggleAutoScroll()">
+          {{ 'Admin.RequestErrors.AutoScroll' | translate }}
+        </button>
+        <button nbButton size="small" status="danger" ghost (click)="clearEntries()">
+          {{ 'Admin.RequestErrors.Clear' | translate }}
+        </button>
+      </div>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <div class="list-container" #listContainer>
+      @if (entries().length === 0) {
+        <div class="empty">{{ 'Admin.RequestErrors.NoEntries' | translate }}</div>
+      } @else {
+        <table class="error-table">
+          <thead>
+            <tr>
+              <th>{{ 'Admin.RequestErrors.Columns.Time' | translate }}</th>
+              <th>{{ 'Admin.RequestErrors.Columns.Status' | translate }}</th>
+              <th>{{ 'Admin.RequestErrors.Columns.Message' | translate }}</th>
+              <th>{{ 'Admin.RequestErrors.Columns.ApiId' | translate }}</th>
+              <th>{{ 'Admin.RequestErrors.Columns.IpId' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entry of entries(); track entry.id) {
+              <tr [ngClass]="getStatusClass(entry.statusCode)">
+                <td class="col-time">{{ formatTimestamp(entry.occurredAt) }}</td>
+                <td class="col-status">{{ entry.statusCode }}</td>
+                <td class="col-message">{{ entry.errorMessage }}</td>
+                <td class="col-id">{{ entry.apiId ?? '—' }}</td>
+                <td class="col-id">{{ entry.ipId ?? '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </nb-card-body>
+</nb-card>
