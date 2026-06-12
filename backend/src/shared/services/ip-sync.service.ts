@@ -53,63 +53,25 @@ export class IpSyncService {
     }
   }
 
-  private _getGateway(ip: string): string {
-    const parts = ip.split('.');
-    return `${parts[0]}.${parts[1]}.${parts[2]}.1`;
-  }
-
-  private _getTableId(ip: string): number {
-    const parts = ip.split('.').map(Number);
-    return parts[2] * 256 + parts[3];
-  }
-
-  private async _runIpCommand(args: string[]): Promise<{ success: boolean; stderr: string }> {
-    const command = new Deno.Command('ip', { args });
-    const result = await command.output();
-    return {
-      success: result.success,
-      stderr: new TextDecoder().decode(result.stderr),
-    };
-  }
-
   private async _addIpLinux(ip: string, networkInterface: string): Promise<boolean> {
-    const addrResult = await this._runIpCommand(['addr', 'add', `${ip}/32`, 'dev', networkInterface]);
+    const command = new Deno.Command('ip', {
+      args: ['addr', 'add', `${ip}/32`, 'dev', networkInterface],
+    });
+    const result = await command.output();
 
-    if (!addrResult.success) {
-      if (addrResult.stderr.includes('RTNETLINK answers: File exists') || addrResult.stderr.includes('Address already assigned')) {
+    if (result.success) {
+      console.log(`[IpSync] ✓ Added: ${ip}`);
+      return true;
+    } else {
+      const stderr = new TextDecoder().decode(result.stderr);
+      if (stderr.includes('RTNETLINK answers: File exists') || stderr.includes('Address already assigned')) {
         console.log(`[IpSync] ✓ Already exists: ${ip}`);
+        return true;
       } else {
-        console.error(`[IpSync] ✗ Failed to add: ${ip} - ${addrResult.stderr.trim()}`);
+        console.error(`[IpSync] ✗ Failed to add: ${ip} - ${stderr.trim()}`);
         return false;
       }
-    } else {
-      console.log(`[IpSync] ✓ Added: ${ip}`);
     }
-
-    const gateway = this._getGateway(ip);
-    const tableId = this._getTableId(ip);
-
-    // Make the gateway reachable on-link within the table (needed because IP is added as /32)
-    const gwRouteResult = await this._runIpCommand(['route', 'add', gateway, 'dev', networkInterface, 'table', String(tableId)]);
-    if (!gwRouteResult.success && !gwRouteResult.stderr.includes('File exists')) {
-      console.error(`[IpSync] ✗ Failed to add gateway route for ${ip}: ${gwRouteResult.stderr.trim()}`);
-      return false;
-    }
-
-    const routeResult = await this._runIpCommand(['route', 'add', 'default', 'via', gateway, 'src', ip, 'table', String(tableId)]);
-    if (!routeResult.success && !routeResult.stderr.includes('File exists')) {
-      console.error(`[IpSync] ✗ Failed to add route for ${ip}: ${routeResult.stderr.trim()}`);
-      return false;
-    }
-
-    const ruleResult = await this._runIpCommand(['rule', 'add', 'from', ip, 'table', String(tableId)]);
-    if (!ruleResult.success && !ruleResult.stderr.includes('File exists')) {
-      console.error(`[IpSync] ✗ Failed to add rule for ${ip}: ${ruleResult.stderr.trim()}`);
-      return false;
-    }
-
-    console.log(`[IpSync] ✓ Policy routing set: ${ip} via ${gateway} (table ${tableId})`);
-    return true;
   }
 
   private async _addIpWindows(ip: string, networkInterface: string): Promise<boolean> {
@@ -150,24 +112,21 @@ export class IpSyncService {
   }
 
   private async _removeIpLinux(ip: string, networkInterface: string): Promise<boolean> {
-    const gateway = this._getGateway(ip);
-    const tableId = this._getTableId(ip);
+    const command = new Deno.Command('ip', {
+      args: ['addr', 'del', `${ip}/32`, 'dev', networkInterface],
+    });
+    const result = await command.output();
 
-    await this._runIpCommand(['rule', 'del', 'from', ip, 'table', String(tableId)]);
-    await this._runIpCommand(['route', 'del', 'default', 'via', gateway, 'src', ip, 'table', String(tableId)]);
-    await this._runIpCommand(['route', 'del', gateway, 'dev', networkInterface, 'table', String(tableId)]);
-
-    const addrResult = await this._runIpCommand(['addr', 'del', `${ip}/32`, 'dev', networkInterface]);
-
-    if (addrResult.success) {
+    if (result.success) {
       console.log(`[IpSync] ✓ Removed: ${ip}`);
       return true;
     } else {
-      if (addrResult.stderr.includes('Cannot assign requested address')) {
+      const stderr = new TextDecoder().decode(result.stderr);
+      if (stderr.includes('Cannot assign requested address')) {
         console.log(`[IpSync] ✓ Already removed: ${ip}`);
         return true;
       } else {
-        console.error(`[IpSync] ✗ Failed to remove: ${ip} - ${addrResult.stderr.trim()}`);
+        console.error(`[IpSync] ✗ Failed to remove: ${ip} - ${stderr.trim()}`);
         return false;
       }
     }
