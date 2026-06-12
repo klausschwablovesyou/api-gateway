@@ -40,7 +40,7 @@ export class GatewayService {
       console.log('[GatewayService] API lookup result:', api ? `found (id: ${api.id})` : 'NOT FOUND');
 
       if (!api) {
-        throw new HttpException('API not found', HttpStatusCode.NotFound);
+        throw new HttpException(HttpStatusCode.NotFound, 'API not found');
       }
       currentApiId = api.id;
 
@@ -50,7 +50,7 @@ export class GatewayService {
 
       if (api.publicKey !== publicKey) {
         console.warn('[GatewayService] Public key mismatch');
-        throw new HttpException('Invalid API key', HttpStatusCode.Unauthorized);
+        throw new HttpException(HttpStatusCode.Unauthorized, 'Invalid API key');
       }
 
       console.log('[GatewayService] Validating signature...');
@@ -63,7 +63,7 @@ export class GatewayService {
 
       if (!isValidSignature) {
         console.warn('[GatewayService] Invalid signature');
-        throw new HttpException('Invalid signature', HttpStatusCode.Unauthorized);
+        throw new HttpException(HttpStatusCode.Unauthorized, 'Invalid signature');
       }
 
       console.log('[GatewayService] Getting available IP...');
@@ -71,7 +71,7 @@ export class GatewayService {
       console.log('[GatewayService] Available IP:', availableIp ? availableIp.ip : 'NONE');
 
       if (!availableIp) {
-        throw new HttpException('Too many requests. No available IPs.', HttpStatusCode.TooManyRequests);
+        throw new HttpException(HttpStatusCode.TooManyRequests, 'Too many requests. No available IPs.');
       }
       currentIpId = availableIp.id;
 
@@ -105,16 +105,23 @@ export class GatewayService {
 
       return result;
     } catch (err) {
-      if (err instanceof HttpException) {
+      const httpErr = err instanceof HttpException
+        ? err
+        : new HttpException(500, err instanceof Error ? err.message : String(err));
+
+      try {
         await this._requestLogRepository.create({
           apiId: currentApiId,
           ipId: currentIpId,
-          errorMessage: err.message,
-          statusCode: Number(err.status),
+          errorMessage: httpErr.message,
+          statusCode: Number(httpErr.status),
           occurredAt: Date.now(),
         });
         this._realtimeService.notifyByRole(UserRole.SuperAdmin, RealtimeTopic.RequestError);
+      } catch (logErr) {
+        console.error('[GatewayService] Failed to log request error:', logErr);
       }
+
       throw err;
     }
   }
@@ -260,8 +267,8 @@ export class GatewayService {
 
       if (!response.ok) {
         throw new HttpException(
-          `Target API returned ${response.status}: ${response.statusText}`,
-          response.status
+          response.status,
+          `Target API returned ${response.status}: ${response.statusText}`
         );
       }
 
@@ -283,9 +290,9 @@ export class GatewayService {
       if (err instanceof HttpException) {
         throw err;
       }
-      throw new HttpException(`Request failed: ${String(err)}`, 500);
+      throw new HttpException(500, `Request failed: ${String(err)}`);
     } finally {
-      client.close();
+      try { client.close(); } catch { /* ignore */ }
     }
   }
 }
