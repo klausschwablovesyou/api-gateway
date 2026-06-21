@@ -29,13 +29,10 @@ export class PostgresService {
   }
 
   public async query<T = any>(sql: string, params?: any[]): Promise<T[]> {
-    const client = await this._pool.connect();
-    try {
+    return await this._withRetry(async (client) => {
       const result = await client.queryObject<T>(sql, params);
       return result.rows;
-    } finally {
-      client.release();
-    }
+    });
   }
 
   public async queryOne<T = any>(sql: string, params?: any[]): Promise<T | null> {
@@ -44,28 +41,52 @@ export class PostgresService {
   }
 
   public async execute(sql: string, params?: any[]): Promise<number> {
-    const client = await this._pool.connect();
-    try {
+    return await this._withRetry(async (client) => {
       const result = await client.queryObject(sql, params);
       return result.rowCount || 0;
-    } finally {
-      client.release();
-    }
+    });
   }
 
   public async transaction<T>(callback: (client: any) => Promise<T>): Promise<T> {
-    const client = await this._pool.connect();
-    try {
-      await client.queryObject('BEGIN');
-      const result = await callback(client);
-      await client.queryObject('COMMIT');
-      return result;
-    } catch (error) {
-      await client.queryObject('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
+    return await this._withRetry(async (client) => {
+      try {
+        await client.queryObject('BEGIN');
+        const result = await callback(client);
+        await client.queryObject('COMMIT');
+        return result;
+      } catch (error) {
+        await client.queryObject('ROLLBACK');
+        throw error;
+      }
+    });
+  }
+
+  private async _withRetry<T>(fn: (client: any) => Promise<T>): Promise<T> {
+    let lastErr: unknown;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const client = await this._pool.connect();
+      try {
+        return await fn(client);
+      } catch (err) {
+        lastErr = err;
+        if (attempt === 0 && this._isBrokenConnection(err)) {
+          continue;
+        }
+        throw err;
+      } finally {
+        client.release();
+      }
     }
+    throw lastErr;
+  }
+
+  private _isBrokenConnection(err: unknown): boolean {
+    if (!(err instanceof Error)) return false;
+    const code = (err as any).code;
+    return code === 'EPIPE' || code === 'ECONNRESET' ||
+      err.message.includes('BrokenPipe') ||
+      err.message.includes('Connection closed') ||
+      err.message.includes('connection is closed');
   }
 
   public async close(): Promise<void> {
