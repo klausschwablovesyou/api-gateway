@@ -247,52 +247,69 @@ export class GatewayService {
   ): Promise<unknown> {
     console.log('[GatewayService] _makeRequestWithLocalIp:', method, url.toString(), 'via', localAddress);
 
-    const client = Deno.createHttpClient({
-      localAddress: localAddress,
-    });
+    let lastErr: unknown;
 
-    try {
-      const fetchOptions: RequestInit & { client: Deno.HttpClient } = {
-        method: method,
-        client: client,
-      };
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const client = Deno.createHttpClient({ localAddress });
 
-      if (body) {
-        fetchOptions.headers = { 'Content-Type': 'application/json' };
-        fetchOptions.body = JSON.stringify(body);
-      }
+      try {
+        const fetchOptions: RequestInit & { client: Deno.HttpClient } = {
+          method: method,
+          client: client,
+        };
 
-      const response = await fetch(url.toString(), fetchOptions);
-      console.log('[GatewayService] Response status:', response.status, response.statusText);
+        if (body) {
+          fetchOptions.headers = { 'Content-Type': 'application/json' };
+          fetchOptions.body = JSON.stringify(body);
+        }
 
-      if (!response.ok) {
-        throw new HttpException(
-          response.status,
-          `Target API returned ${response.status}: ${response.statusText}`
-        );
-      }
+        const response = await fetch(url.toString(), fetchOptions);
+        console.log('[GatewayService] Response status:', response.status, response.statusText);
 
-      const contentType = response.headers.get('content-type') || '';
-      const data = await response.text();
-      console.log('[GatewayService] Response body:', data);
+        if (!response.ok) {
+          throw new HttpException(
+            response.status,
+            `Target API returned ${response.status}: ${response.statusText}`
+          );
+        }
 
-      if (contentType.includes('application/json')) {
-        try {
-          return JSON.parse(data);
-        } catch {
+        const contentType = response.headers.get('content-type') || '';
+        const data = await response.text();
+
+        if (contentType.includes('application/json')) {
+          try {
+            return JSON.parse(data);
+          } catch {
+            return { data };
+          }
+        } else {
           return { data };
         }
-      } else {
-        return { data };
+      } catch (err) {
+        lastErr = err;
+        if (err instanceof HttpException) {
+          throw err;
+        }
+        if (attempt === 0 && this._isBrokenConnection(err)) {
+          console.warn('[GatewayService] Broken connection, retrying...');
+          continue;
+        }
+        console.error('[GatewayService] Request error:', err);
+        throw new HttpException(500, `Request failed: ${String(err)}`);
+      } finally {
+        try { client.close(); } catch { /* ignore */ }
       }
-    } catch (err) {
-      console.error('[GatewayService] Request error:', err);
-      if (err instanceof HttpException) {
-        throw err;
-      }
-      throw new HttpException(500, `Request failed: ${String(err)}`);
-    } finally {
-      try { client.close(); } catch { /* ignore */ }
     }
+
+    throw new HttpException(500, `Request failed after retry: ${String(lastErr)}`);
+  }
+
+  private _isBrokenConnection(err: unknown): boolean {
+    if (!(err instanceof Error)) return false;
+    const code = (err as unknown as Record<string, unknown>).code;
+    return code === 'EPIPE' || code === 'ECONNRESET' ||
+      err.message.includes('BrokenPipe') ||
+      err.message.includes('connection closed') ||
+      err.message.includes('Connection reset');
   }
 }
