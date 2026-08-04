@@ -15,7 +15,7 @@ export class ApiManagerService {
   public async create(dto: CreateApiDto): Promise<Api> {
     const existing = await this._apiRepository.findByName(dto.name);
     if (existing) {
-      throw new HttpException('API with this name already exists', HTTP_STATUS.CONFLICT);
+      throw new HttpException(HTTP_STATUS.CONFLICT, 'API with this name already exists');
     }
 
     const keyPair = this._apiKeyService.generateKeyPair();
@@ -42,13 +42,13 @@ export class ApiManagerService {
   public async update(id: string, dto: UpdateApiDto): Promise<Api | null> {
     const existing = await this._apiRepository.findById(id);
     if (!existing) {
-      throw new HttpException('API not found', HTTP_STATUS.NOT_FOUND);
+      throw new HttpException(HTTP_STATUS.NOT_FOUND, 'API not found');
     }
 
     if (dto.name && dto.name !== existing.name) {
       const nameExists = await this._apiRepository.findByName(dto.name);
       if (nameExists) {
-        throw new HttpException('API with this name already exists', HTTP_STATUS.CONFLICT);
+        throw new HttpException(HTTP_STATUS.CONFLICT, 'API with this name already exists');
       }
     }
 
@@ -58,7 +58,7 @@ export class ApiManagerService {
   public async delete(id: string): Promise<boolean> {
     const existing = await this._apiRepository.findById(id);
     if (!existing) {
-      throw new HttpException('API not found', HTTP_STATUS.NOT_FOUND);
+      throw new HttpException(HTTP_STATUS.NOT_FOUND, 'API not found');
     }
 
     return await this._apiRepository.delete(id);
@@ -67,7 +67,7 @@ export class ApiManagerService {
   public async regenerateKeys(id: string): Promise<Api> {
     const existing = await this._apiRepository.findById(id);
     if (!existing) {
-      throw new HttpException('API not found', HTTP_STATUS.NOT_FOUND);
+      throw new HttpException(HTTP_STATUS.NOT_FOUND, 'API not found');
     }
 
     const keyPair = this._apiKeyService.generateKeyPair();

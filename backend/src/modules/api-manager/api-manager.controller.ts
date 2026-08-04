@@ -24,7 +24,7 @@ export class ApiManagerController {
   async findById(@Param('id') id: string): Promise<Api> {
     const api = await this._apiManagerService.findById(id);
     if (!api) {
-      throw new HttpException('API not found', HTTP_STATUS.NOT_FOUND);
+      throw new HttpException(HTTP_STATUS.NOT_FOUND, 'API not found');
     }
     return api;
   }
@@ -33,7 +33,7 @@ export class ApiManagerController {
   async update(@Param('id') id: string, @Body() dto: UpdateApiDto): Promise<Api> {
     const api = await this._apiManagerService.update(id, dto);
     if (!api) {
-      throw new HttpException('API not found', HTTP_STATUS.NOT_FOUND);
+      throw new HttpException(HTTP_STATUS.NOT_FOUND, 'API not found');
     }
     return api;
   }

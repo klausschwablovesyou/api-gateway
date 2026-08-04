@@ -22,17 +22,17 @@ export class GatewayController {
 
     if (!apiName) {
       console.warn('[GatewayController] Missing apiName');
-      throw new HttpException('apiName parameter is required', HTTP_STATUS.BAD_REQUEST);
+      throw new HttpException(HTTP_STATUS.BAD_REQUEST, 'apiName parameter is required');
     }
 
     if (!publicKey) {
       console.warn('[GatewayController] Missing x-api-public-key header');
-      throw new HttpException('x-api-public-key header is required', HTTP_STATUS.BAD_REQUEST);
+      throw new HttpException(HTTP_STATUS.BAD_REQUEST, 'x-api-public-key header is required');
     }
 
     if (!signature) {
       console.warn('[GatewayController] Missing x-api-signature header');
-      throw new HttpException('x-api-signature header is required', HTTP_STATUS.BAD_REQUEST);
+      throw new HttpException(HTTP_STATUS.BAD_REQUEST, 'x-api-signature header is required');
     }
 
     const { apiName: _, ...optionalParams } = params;

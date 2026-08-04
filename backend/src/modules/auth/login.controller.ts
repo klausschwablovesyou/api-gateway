@@ -27,7 +27,7 @@ export class LoginController {
   async register(@Body() registerDto: RegisterRequestDto): Promise<AuthResponseDto> {
     const isRegistrationEnabled = await this.configManagerService.isRegistrationEnabled();
     if (!isRegistrationEnabled) {
-      throw new HttpException('Registration is disabled', HTTP_STATUS.FORBIDDEN);
+      throw new HttpException(HTTP_STATUS.FORBIDDEN, 'Registration is disabled');
     }
 
     const result = await this.authService.register(registerDto.username, registerDto.email, registerDto.password);
