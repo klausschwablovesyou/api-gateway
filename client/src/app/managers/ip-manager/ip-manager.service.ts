@@ -10,6 +10,7 @@ import { Ip } from '@shared/models/ip.model';
 import { CreateIpDto } from '@shared/dtos/create-ip.dto';
 import { UpdateIpDto } from '@shared/dtos/update-ip.dto';
 import { SuccessResponseDto } from '@shared/dtos/success-response.dto';
+import { IpSyncResponseDto } from '@shared/dtos/ip-sync-response.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,16 @@ export class IpManagerService {
     });
     return this._apiClient.get<Ip>(requestData).pipe(
       map((response: HttpResponse<Ip>) => response.body!)
+    );
+  }
+
+  public sync(): Observable<IpSyncResponseDto> {
+    const requestData = new PostRequestData({
+      endpoint: 'ip-manager/sync',
+      requestBody: {}
+    });
+    return this._apiClient.post<IpSyncResponseDto>(requestData).pipe(
+      map((response: HttpResponse<IpSyncResponseDto>) => response.body!)
     );
   }
 

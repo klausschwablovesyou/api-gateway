@@ -215,6 +215,7 @@
   "IpManager": {
     "Title": "IP címek",
     "Add": "IP hozzáadása",
+    "Sync": "Újraszinkronizálás",
     "Edit": "IP szerkesztése",
     "Create": "IP létrehozása",
     "NoData": "Nincs IP cím",
@@ -236,7 +237,9 @@
       "UpdateSuccess": "IP sikeresen frissítve",
       "DeleteSuccess": "IP sikeresen törölve",
       "NotFound": "IP nem található",
-      "AlreadyExists": "Ez az IP cím már létezik"
+      "AlreadyExists": "Ez az IP cím már létezik",
+      "SyncSuccess": "{{succeeded}}/{{total}} IP cím beállítva a(z) {{networkInterface}} interfészen",
+      "SyncPartial": "{{failed}} IP címet nem sikerült beállítani a(z) {{networkInterface}} interfészen ({{succeeded}}/{{total}} sikeres)"
     }
   },
   "ConfigManager": {

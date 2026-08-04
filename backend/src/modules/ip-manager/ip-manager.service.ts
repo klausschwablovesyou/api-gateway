@@ -4,6 +4,7 @@ import { IpSyncService } from '../../shared/services/ip-sync.service.ts';
 import { Ip } from '@shared/models/ip.model.ts';
 import { CreateIpDto } from '@shared/dtos/create-ip.dto.ts';
 import { UpdateIpDto } from '@shared/dtos/update-ip.dto.ts';
+import { IpSyncResponseDto } from '@shared/dtos/ip-sync-response.dto.ts';
 
 @Injectable()
 export class IpManagerService {
@@ -15,7 +16,7 @@ export class IpManagerService {
   public async create(dto: CreateIpDto): Promise<Ip> {
     const existing = await this._ipRepository.findByIp(dto.ip);
     if (existing) {
-      throw new HttpException('IP already exists', HTTP_STATUS.CONFLICT);
+      throw new HttpException(HTTP_STATUS.CONFLICT, 'IP already exists');
     }
 
     const ip = await this._ipRepository.create({
@@ -38,13 +39,13 @@ export class IpManagerService {
   public async update(id: string, dto: UpdateIpDto): Promise<Ip | null> {
     const existing = await this._ipRepository.findById(id);
     if (!existing) {
-      throw new HttpException('IP not found', HTTP_STATUS.NOT_FOUND);
+      throw new HttpException(HTTP_STATUS.NOT_FOUND, 'IP not found');
     }
 
     if (dto.ip && dto.ip !== existing.ip) {
       const ipExists = await this._ipRepository.findByIp(dto.ip);
       if (ipExists) {
-        throw new HttpException('IP already exists', HTTP_STATUS.CONFLICT);
+        throw new HttpException(HTTP_STATUS.CONFLICT, 'IP already exists');
       }
 
       // Remove old IP and add new one
@@ -58,11 +59,15 @@ export class IpManagerService {
   public async delete(id: string): Promise<boolean> {
     const existing = await this._ipRepository.findById(id);
     if (!existing) {
-      throw new HttpException('IP not found', HTTP_STATUS.NOT_FOUND);
+      throw new HttpException(HTTP_STATUS.NOT_FOUND, 'IP not found');
     }
 
     await this._ipSyncService.removeIpFromNetwork(existing.ip);
 
     return await this._ipRepository.delete(id);
+  }
+
+  public async syncAll(): Promise<IpSyncResponseDto> {
+    return await this._ipSyncService.syncIpsToNetwork();
   }
 }

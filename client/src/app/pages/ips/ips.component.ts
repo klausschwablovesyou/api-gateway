@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbCardModule, NbButtonModule, NbIconModule, NbDialogService } from '@nebular/theme';
+import { NbCardModule, NbButtonModule, NbIconModule, NbDialogService, NbToastrService } from '@nebular/theme';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { IpManagerService } from '@app/managers/ip-manager/ip-manager.service';
 import { Ip } from '@shared/models/ip.model';
+import { IpSyncResponseDto } from '@shared/dtos/ip-sync-response.dto';
 import { IpEditorComponent } from './ip-editor/ip-editor.component';
 import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-dialog.component';
 
@@ -23,16 +24,33 @@ import { ConfirmDialogComponent } from '@app/components/confirm-dialog/confirm-d
 })
 export class IpsComponent implements OnInit {
   public ips: Ip[] = [];
+  public syncing = false;
 
   constructor(
     private readonly _ipManagerService: IpManagerService,
     private readonly _cdr: ChangeDetectorRef,
     private readonly _dialogService: NbDialogService,
-    private readonly _translateService: TranslateService
+    private readonly _translateService: TranslateService,
+    private readonly _toastrService: NbToastrService
   ) {}
 
   public ngOnInit(): void {
     this._loadIps();
+  }
+
+  public onSync(): void {
+    this.syncing = true;
+    this._ipManagerService.sync().subscribe({
+      next: (result) => {
+        this.syncing = false;
+        this._showSyncResult(result);
+        this._cdr.markForCheck();
+      },
+      error: () => {
+        this.syncing = false;
+        this._cdr.markForCheck();
+      }
+    });
   }
 
   public onAdd(): void {
@@ -68,6 +86,18 @@ export class IpsComponent implements OnInit {
         });
       }
     });
+  }
+
+  private _showSyncResult(result: IpSyncResponseDto): void {
+    const messageKey = result.failed > 0 ? 'IpManager.Messages.SyncPartial' : 'IpManager.Messages.SyncSuccess';
+    const message = this._translateService.instant(messageKey, {
+      succeeded: result.succeeded,
+      failed: result.failed,
+      total: result.total,
+      networkInterface: result.networkInterface
+    });
+
+    this._toastrService.show(message, '', { status: result.failed > 0 ? 'danger' : 'success' });
   }
 
   private _loadIps(): void {

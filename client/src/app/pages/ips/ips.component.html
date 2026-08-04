@@ -2,10 +2,16 @@
   <nb-card-header>
     <div class="header-container">
       <h5>{{ 'IpManager.Title' | translate }}</h5>
-      <button nbButton status="primary" size="small" (click)="onAdd()">
-        <nb-icon icon="plus-outline"></nb-icon>
-        {{ 'IpManager.Add' | translate }}
-      </button>
+      <div class="header-actions">
+        <button nbButton status="basic" size="small" [disabled]="syncing" (click)="onSync()">
+          <nb-icon icon="refresh-outline"></nb-icon>
+          {{ 'IpManager.Sync' | translate }}
+        </button>
+        <button nbButton status="primary" size="small" (click)="onAdd()">
+          <nb-icon icon="plus-outline"></nb-icon>
+          {{ 'IpManager.Add' | translate }}
+        </button>
+      </div>
     </div>
   </nb-card-header>
   <nb-card-body>

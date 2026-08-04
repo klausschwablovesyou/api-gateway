@@ -29,6 +29,8 @@
     "@shared/types/log-level": "../shared/types/log-level.ts",
     "@shared/types/request-limit-unit": "../shared/types/request-limit-unit.ts",
     "@shared/types/http-method": "../shared/types/http-method.ts",
+    "@shared/types/ip-sync-status": "../shared/types/ip-sync-status.ts",
+    "@shared/dtos/ip-sync-result.dto": "../shared/dtos/ip-sync-result.dto.ts",
     "@shared/types/http-status-code": "./src/shared/types/http-status-code.ts"
   },
   "compilerOptions": {

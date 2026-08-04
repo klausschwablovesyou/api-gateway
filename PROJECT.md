@@ -148,8 +148,11 @@ Jelszó szabályok: min 6 karakter, nagybetű, kisbetű, szám, speciális karak
 | `GET /` | Lista |
 | `PUT /:id` | Módosítás + régi eltávolítás, új hozzáadás |
 | `DELETE /:id` | Törlés + `ip addr del <ip>/32 dev <iface>` |
+| `POST /sync` | Az összes DB-beli IP újraszinkronizálása (ugyanaz, mint induláskor) + visszaellenőrzés |
 
-**IpSyncService** — induláskor (`SYNC_IPS_ON_STARTUP=true`) az összes DB-beli IP-t hozzáadja a hálózati interfészhez.
+**IpSyncService** — induláskor (`SYNC_IPS_ON_STARTUP=true`) az összes DB-beli IP-t hozzáadja a hálózati interfészhez. Ugyanez futtatható bármikor a `POST /api/ip-manager/sync` végponttal (IP-k oldal → „Újraszinkronizálás" gomb).
+
+A szinkron végén `ip -o addr show` alapján visszaellenőrzi, mely címek vannak ténylegesen bindolva (`verified` mező) — így a némán elbukó `ip addr add` (pl. hiányzó `NET_ADMIN`) is látszik.
 
 Hálózati interfész detektálás: `ip route show default` → `dev <iface>` regex. Fallback: `eth0`.
 

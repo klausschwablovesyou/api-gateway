@@ -5,6 +5,7 @@ import { Roles } from '../../shared/decorators/roles.decorator.ts';
 import { UserRole } from '@shared/types/user-role.ts';
 import type { CreateIpDto } from '@shared/dtos/create-ip.dto.ts';
 import type { UpdateIpDto } from '@shared/dtos/update-ip.dto.ts';
+import type { IpSyncResponseDto } from '@shared/dtos/ip-sync-response.dto.ts';
 
 @Controller('ip-manager')
 export class IpManagerController {
@@ -18,6 +19,12 @@ export class IpManagerController {
     return await this._ipManagerService.create(dto);
   }
 
+  @Post('sync')
+  @Roles(UserRole.SuperAdmin)
+  async sync(): Promise<IpSyncResponseDto> {
+    return await this._ipManagerService.syncAll();
+  }
+
   @Get()
   @Roles(UserRole.SuperAdmin)
   async findAll(): Promise<Ip[]> {
@@ -29,7 +36,7 @@ export class IpManagerController {
   async findById(@Param('id') id: string): Promise<Ip> {
     const ip = await this._ipManagerService.findById(id);
     if (!ip) {
-      throw new HttpException('IP not found', HTTP_STATUS.NOT_FOUND);
+      throw new HttpException(HTTP_STATUS.NOT_FOUND, 'IP not found');
     }
     return ip;
   }
@@ -39,7 +46,7 @@ export class IpManagerController {
   async update(@Param('id') id: string, @Body() dto: UpdateIpDto): Promise<Ip> {
     const ip = await this._ipManagerService.update(id, dto);
     if (!ip) {
-      throw new HttpException('IP not found', HTTP_STATUS.NOT_FOUND);
+      throw new HttpException(HTTP_STATUS.NOT_FOUND, 'IP not found');
     }
     return ip;
   }

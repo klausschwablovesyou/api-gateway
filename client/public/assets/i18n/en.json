@@ -215,6 +215,7 @@
   "IpManager": {
     "Title": "IPs",
     "Add": "Add IP",
+    "Sync": "Re-sync",
     "Edit": "Edit IP",
     "Create": "Create IP",
     "NoData": "No IPs found",
@@ -236,7 +237,9 @@
       "UpdateSuccess": "IP updated successfully",
       "DeleteSuccess": "IP deleted successfully",
       "NotFound": "IP not found",
-      "AlreadyExists": "This IP address already exists"
+      "AlreadyExists": "This IP address already exists",
+      "SyncSuccess": "{{succeeded}}/{{total}} IPs bound on {{networkInterface}}",
+      "SyncPartial": "Failed to bind {{failed}} IPs on {{networkInterface}} ({{succeeded}}/{{total}} succeeded)"
     }
   },
   "ConfigManager": {
