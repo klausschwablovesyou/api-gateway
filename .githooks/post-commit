@@ -1,0 +1,28 @@
+#!/bin/sh
+# Runs every backend and client unit test after each commit.
+# Git ignores the exit code of post-commit, so a failure cannot undo the commit:
+# it is reported here, and the commit has to be fixed or reverted by hand.
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+# Git exports these for hooks; they must not leak into the test processes.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE
+
+commit="$(git rev-parse --short HEAD)"
+
+echo "post-commit: running all tests for $commit..."
+
+if deno task test; then
+  echo "post-commit: all tests passed for $commit."
+  exit 0
+fi
+
+cat >&2 <<EOF
+
+==============================================================
+post-commit: TESTS FAILED for $commit
+The commit exists. Fix it with 'git commit --amend', or undo it
+with 'git reset --soft HEAD~1'. Do not push it as it is.
+==============================================================
+EOF
+exit 1

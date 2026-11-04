@@ -243,6 +243,16 @@ The backend patches the `console.*` methods, so every log line goes to the conso
 
 Never place a test file in `backend/src/shared/database/migrations/`, because `MigrationRunner` executes every `.ts` file in that directory.
 
+### Post-commit test hook
+
+`.githooks/post-commit` runs `deno task test` after every commit. Enable it once per clone:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+The hook runs after the commit is created, so a test failure cannot prevent the commit. It prints an error, and the commit has to be amended or reset by hand. The tests run against the working tree, so uncommitted changes affect the result.
+
 ## Known issues
 
 - **Memory page is empty**: nothing calls `RealtimeService._startMemoryBroadcast()`, so `MemoryUsage` messages are never sent.
