@@ -1,4 +1,5 @@
 import '@denorid/reflection';
+import { UserRole } from '@shared/types/user-role.ts';
 
 export const ROLES_KEY = 'roles';
 
@@ -29,3 +30,8 @@ export const SetMetadata = (key: string, value: any) => {
  * @Roles('user', 'admin')
  */
 export const Roles = (...roles: string[]) => SetMetadata(ROLES_KEY, roles);
+
+/**
+ * Requires a valid JWT, regardless of role (any logged-in user).
+ */
+export const Authenticated = () => Roles(...Object.values(UserRole));

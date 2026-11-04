@@ -3,8 +3,10 @@ import { ApiManagerService } from './api-manager.service.ts';
 import { Api } from '@shared/models/api.model.ts';
 import type { UpdateApiDto } from '@shared/dtos/update-api.dto.ts';
 import type { CreateApiDto } from "@shared/dtos/create-api.dto.ts";
+import { Authenticated } from '../../shared/decorators/roles.decorator.ts';
 
 @Controller('api-manager')
+@Authenticated()
 export class ApiManagerController {
   public constructor(
     private readonly _apiManagerService: ApiManagerService

@@ -1,4 +1,6 @@
-import { Module } from '@danet/core';
+import { GLOBAL_GUARD, Module } from '@danet/core';
+import { RolesGuard } from './shared/guards/roles.guard.ts';
+import { JwtService } from './shared/services/jwt.service.ts';
 import { PostgresService } from './shared/database/postgres.service.ts';
 import { RedirectExceptionFilter } from './shared/filters/redirect-exception.filter.ts';
 import { HttpExceptionFilter } from './shared/filters/http-exception.filter.ts';
@@ -20,6 +22,9 @@ import { IpRepository } from './shared/repositories/ip.repository.ts';
     HttpExceptionFilter,
     IpSyncService,
     IpRepository,
+    JwtService,
+    // Enforces @Roles(...) metadata on every HTTP route; routes without it stay public.
+    { token: GLOBAL_GUARD, useClass: RolesGuard },
   ],
 })
 export class AppModule {}

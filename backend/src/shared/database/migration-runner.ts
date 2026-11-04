@@ -1,5 +1,16 @@
 import { PostgresService } from './postgres.service.ts';
 
+/** Minimal client surface passed to TypeScript migrations (runs inside the migration transaction). */
+export interface MigrationClient {
+  queryObject<T = Record<string, unknown>>(sql: string, args?: unknown[]): Promise<{ rows: T[]; rowCount?: number }>;
+}
+
+/**
+ * A TypeScript migration file (NNN_name.ts) must default-export this function.
+ * Use it when a migration needs runtime logic (env vars, hashing) that plain SQL cannot do.
+ */
+export type TsMigration = (client: MigrationClient) => Promise<void>;
+
 export class MigrationRunner {
   constructor(
     private readonly _postgresService: PostgresService,
@@ -17,7 +28,7 @@ export class MigrationRunner {
     const migrations: string[] = [];
 
     for await (const entry of Deno.readDir(migrationsDir)) {
-      if (entry.isFile && entry.name.endsWith('.sql')) {
+      if (entry.isFile && (entry.name.endsWith('.sql') || entry.name.endsWith('.ts'))) {
         migrations.push(entry.name);
       }
     }
@@ -64,13 +75,20 @@ export class MigrationRunner {
 
     console.log(`  → Running migration ${filename}...`);
 
-    // Read migration file
     const migrationPath = new URL(`./migrations/${filename}`, import.meta.url);
-    const sql = await Deno.readTextFile(migrationPath);
 
     // Execute migration in transaction
     await this._postgresService.transaction(async (client) => {
-      await client.queryObject(sql);
+      if (filename.endsWith('.ts')) {
+        const module = await import(migrationPath.href) as { default?: TsMigration };
+        if (typeof module.default !== 'function') {
+          throw new Error(`Migration ${filename} must default-export an async function(client)`);
+        }
+        await module.default(client);
+      } else {
+        const sql = await Deno.readTextFile(migrationPath);
+        await client.queryObject(sql);
+      }
       await client.queryObject(
         'INSERT INTO migrations (name, app) VALUES ($1, $2)',
         [filename, this._appName]
