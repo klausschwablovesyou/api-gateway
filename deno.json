@@ -16,6 +16,9 @@
     "build": "deno task build:backend && deno task build:client",
     "build:backend": "cd backend && deno cache main.ts",
     "build:client": "cd client && npm run build",
-    "start": "cd backend && deno task start"
+    "start": "cd backend && deno task start",
+    "test": "deno task test:backend && deno task test:client",
+    "test:backend": "cd backend && deno task test",
+    "test:client": "cd client && npm test -- --watch=false --browsers=ChromeHeadless"
   }
 }

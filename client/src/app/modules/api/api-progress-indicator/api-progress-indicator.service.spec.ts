@@ -1,48 +1,82 @@
-import { TestBed } from '@angular/core/testing';
 import { ApiProgressIndicatorService } from './api-progress-indicator.service';
-import { ApiStatesService } from "../api-states.service";
+import { ApiStatesService } from '../api-states.service';
 
 describe('ApiProgressIndicatorService', () => {
   let service: ApiProgressIndicatorService;
   let states: ApiStatesService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    jasmine.clock().install();
     states = new ApiStatesService();
     service = new ApiProgressIndicatorService(3000, states);
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+  afterEach(() => jasmine.clock().uninstall());
 
-  it("should hide progress indicator when response is not in progress", () => {
-    jest.useFakeTimers();
+  it('should show the indicator when the response is still in progress after the timeout', () => {
     states.isResponseInProgress.set(true);
     service.setProgressIndicatorTimeout();
-    jest.advanceTimersByTime(2999);
-    expect(states.isProgressIndicatorVisible.value).toBe(false);
-    states.isResponseInProgress.set(false);
-    jest.advanceTimersByTime(1);
-    expect(states.isProgressIndicatorVisible.value).toBe(false);
+
+    jasmine.clock().tick(2999);
+    expect(states.isProgressIndicatorVisible.value).toBeFalse();
+
+    jasmine.clock().tick(1);
+    expect(states.isProgressIndicatorVisible.value).toBeTrue();
   });
 
-  it("should show progress indicator when response is in progress", () => {
-    jest.useFakeTimers();
-    states.isResponseInProgress.set(true);
-    service.setProgressIndicatorTimeout();
-    jest.advanceTimersByTime(3000);
-    expect(states.isProgressIndicatorVisible.value).toBe(true);
-  });
-
-  it("should show progress indicator with custom timeout", () => {
-    jest.useFakeTimers();
+  it('should prefer a custom timeout', () => {
     states.isResponseInProgress.set(true);
     service.setProgressIndicatorTimeout(2000);
-    jest.advanceTimersByTime(1999);
-    expect(states.isProgressIndicatorVisible.value).toBe(false);
-    jest.advanceTimersByTime(1);
-    expect(states.isProgressIndicatorVisible.value).toBe(true);
+
+    jasmine.clock().tick(1999);
+    expect(states.isProgressIndicatorVisible.value).toBeFalse();
+
+    jasmine.clock().tick(1);
+    expect(states.isProgressIndicatorVisible.value).toBeTrue();
   });
 
+  it('should never show the indicator when the response arrives before the timeout', () => {
+    states.isResponseInProgress.set(true);
+    service.setProgressIndicatorTimeout();
+
+    jasmine.clock().tick(2999);
+    states.isResponseInProgress.set(false);
+    jasmine.clock().tick(1);
+
+    expect(states.isProgressIndicatorVisible.value).toBeFalse();
+  });
+
+  it('should hide a visible indicator when the response arrives', () => {
+    states.isResponseInProgress.set(true);
+    service.setProgressIndicatorTimeout();
+    jasmine.clock().tick(3000);
+
+    states.isResponseInProgress.set(false);
+
+    expect(states.isProgressIndicatorVisible.value).toBeFalse();
+  });
+
+  it('should not show the indicator when nothing is in progress at the timeout', () => {
+    service.setProgressIndicatorTimeout();
+
+    jasmine.clock().tick(3000);
+
+    expect(states.isProgressIndicatorVisible.value).toBeFalse();
+  });
+
+  it('should update the progress state', () => {
+    service.setResponseProgression(true);
+    expect(states.isResponseInProgress.value).toBeTrue();
+
+    service.setResponseProgression(false);
+    expect(states.isResponseInProgress.value).toBeFalse();
+  });
+
+  it('should show and hide the indicator directly', () => {
+    service.showProgressIndicator();
+    expect(states.isProgressIndicatorVisible.value).toBeTrue();
+
+    service.hideProgressIndicator();
+    expect(states.isProgressIndicatorVisible.value).toBeFalse();
+  });
 });

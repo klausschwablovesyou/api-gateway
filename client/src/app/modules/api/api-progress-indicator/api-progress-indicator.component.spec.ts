@@ -1,62 +1,48 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ChangeDetectorRef } from '@angular/core';
 import { ApiProgressIndicatorComponent } from './api-progress-indicator.component';
 import { ApiStatesService } from '../api-states.service';
-import { ChangeDetectorRef } from '@angular/core';
-import { State } from "../../../types/state";
-import { TranslatePipe } from '@ngx-translate/core';
-import { DialogModule } from "primeng/dialog";
-import { ProgressBarModule } from "primeng/progressbar";
-import { MockPipe } from "ng-mocks";
 
 describe('ApiProgressIndicatorComponent', () => {
   let component: ApiProgressIndicatorComponent;
-  let fixture: ComponentFixture<ApiProgressIndicatorComponent>;
-  let apiStatesService: ApiStatesService;
-  let changeDetectorRef: ChangeDetectorRef;
-
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [ DialogModule, ProgressBarModule ],
-      declarations: [ ApiProgressIndicatorComponent, MockPipe(TranslatePipe) ],
-      providers: [
-        { provide: ApiStatesService, useValue: {
-            isProgressIndicatorVisible: new State(false),
-            responseInProgressText: undefined
-          }},
-        { provide: ChangeDetectorRef, useValue: {
-          markForCheck: jest.fn()
-          } }
-      ]
-    }).compileComponents();
-  }));
+  let states: ApiStatesService;
+  let changeRef: jasmine.SpyObj<ChangeDetectorRef>;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ApiProgressIndicatorComponent);
-    component = fixture.componentInstance;
-    apiStatesService = TestBed.inject(ApiStatesService);
-    changeDetectorRef = TestBed.inject(ChangeDetectorRef);
-    fixture.detectChanges();
+    states = new ApiStatesService();
+    changeRef = jasmine.createSpyObj<ChangeDetectorRef>('ChangeDetectorRef', ['detectChanges']);
+    component = new ApiProgressIndicatorComponent(states, changeRef);
+    component.ngOnInit();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should start hidden with the default text, without running change detection', () => {
+    expect(component.isProgressVisible).toBeFalse();
+    expect(component.progressText).toBe('Common.In-progress');
+    expect(changeRef.detectChanges).not.toHaveBeenCalled();
   });
 
-  it('should set progressText and isProgressVisible based on apiStatesService', () => {
-    expect(component.isProgressVisible).toBeFalsy();
+  it('should follow the visibility state and run change detection', () => {
+    states.isProgressIndicatorVisible.set(true);
+    expect(component.isProgressVisible).toBeTrue();
 
-    const testProgressText = 'In Progress...'
+    states.isProgressIndicatorVisible.set(false);
+    expect(component.isProgressVisible).toBeFalse();
 
-    apiStatesService.responseInProgressText = testProgressText;
-    apiStatesService.isProgressIndicatorVisible.set(true);
-
-    expect(component.progressText).toEqual(testProgressText);
-    expect(component.isProgressVisible).toBeTruthy();
+    expect(changeRef.detectChanges).toHaveBeenCalledTimes(2);
   });
 
-  it('should call markForCheck on changeDetectorRef when isProgressVisible changes', () => {
-    const markForCheckSpy = jest.spyOn(changeDetectorRef, 'markForCheck');
+  it('should use the text of the current request', () => {
+    states.responseInProgressText = 'Saving...';
 
-    apiStatesService.isProgressIndicatorVisible.set(true).subscribe(() => expect(markForCheckSpy).toHaveBeenCalled());
+    states.isProgressIndicatorVisible.set(true);
+
+    expect(component.progressText).toBe('Saving...');
+  });
+
+  it('should keep the current text when the request has none', () => {
+    states.responseInProgressText = undefined;
+
+    states.isProgressIndicatorVisible.set(true);
+
+    expect(component.progressText).toBe('Common.In-progress');
   });
 });

@@ -1,16 +1,12 @@
-import { TestBed } from '@angular/core/testing';
-
 import { ApiStatesService } from './api-states.service';
 
 describe('ApiStatesService', () => {
-  let service: ApiStatesService;
+  it('should start with nothing in progress and no message', () => {
+    const service = new ApiStatesService();
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = new ApiStatesService();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(service.isResponseInProgress.value).toBeFalse();
+    expect(service.isProgressIndicatorVisible.value).toBeFalse();
+    expect(service.message.value).toBeNull();
+    expect(service.responseInProgressText).toBeUndefined();
   });
 });
