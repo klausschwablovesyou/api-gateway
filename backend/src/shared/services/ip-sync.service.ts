@@ -61,9 +61,13 @@ export class IpSyncService {
     }
   }
 
+  private _toHostCidr(ip: string): string {
+    return ip.includes(':') ? `${ip}/128` : `${ip}/32`;
+  }
+
   private async _addIpLinux(ip: string, networkInterface: string): Promise<IpSyncResultDto> {
     const command = new Deno.Command('ip', {
-      args: ['addr', 'add', `${ip}/32`, 'dev', networkInterface],
+      args: ['addr', 'add', this._toHostCidr(ip), 'dev', networkInterface],
     });
     const result = await command.output();
 
@@ -121,7 +125,7 @@ export class IpSyncService {
 
   private async _removeIpLinux(ip: string, networkInterface: string): Promise<boolean> {
     const command = new Deno.Command('ip', {
-      args: ['addr', 'del', `${ip}/32`, 'dev', networkInterface],
+      args: ['addr', 'del', this._toHostCidr(ip), 'dev', networkInterface],
     });
     const result = await command.output();
 

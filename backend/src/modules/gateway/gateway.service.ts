@@ -176,20 +176,15 @@ export class GatewayService {
     params: Record<string, string>
   ): { url: string; remainingParams: Record<string, string> } {
     const remainingParams = { ...params };
-    let url = apiUrl;
 
-    const placeholderRegex = /\{(\w+)\}/g;
-    let match;
-
-    while ((match = placeholderRegex.exec(apiUrl)) !== null) {
-      const placeholder = match[0];
-      const paramName = match[1];
-
-      if (paramName in remainingParams) {
-        url = url.replace(placeholder, encodeURIComponent(remainingParams[paramName]));
-        delete remainingParams[paramName];
+    const url = apiUrl.replace(/\{(\w+)\}/g, (placeholder: string, paramName: string) => {
+      if (!Object.hasOwn(params, paramName)) {
+        return placeholder;
       }
-    }
+
+      delete remainingParams[paramName];
+      return encodeURIComponent(params[paramName]);
+    });
 
     return { url, remainingParams };
   }

@@ -22,7 +22,7 @@ export class JwtService {
 
   public async verifyToken(token: string): Promise<JwtPayload | null> {
     try {
-      const payload = await validateJWT(token, this._secretKey);
+      const payload = await validateJWT(token, this._secretKey, { validateExp: true });
       return payload as JwtPayload;
     } catch (error) {
       console.error('JWT verification failed:', error);

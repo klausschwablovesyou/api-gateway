@@ -45,7 +45,7 @@ export class ApiRequestDecoratorService implements IApiRequestDecoratorService {
         isResponseHandlingNeeded = this.checkResponseHandlingExceptions(requestData, response, isResponseHandlingNeeded);
 
         if (isResponseHandlingNeeded) {
-          this.decorateMessages(requestData, response.status, response);
+          this.decorateMessages(requestData, response.status, response.error);
         }
 
         if (isProgressIndicatorNeeded) {
@@ -70,13 +70,9 @@ export class ApiRequestDecoratorService implements IApiRequestDecoratorService {
 
   private decorateMessages(requestData: RequestData, responseStatus: number, responseBody: any): void {
 
-    const isSuccess = responseStatus === 200;
+    const isSuccess = responseStatus >= 200 && responseStatus < 300;
     // Tries to find the related message for the statusCode of response
     let customMessage = requestData.responseMessages?.find(x => x.statusCode === responseStatus);
-
-    if (!customMessage?.messageText) {
-      return;
-    }
 
     // If there is no message with the statusCode of the response, and it's not a success response,
     // it tries to find a default error message (default messages have no statusCode keys)
@@ -104,8 +100,14 @@ export class ApiRequestDecoratorService implements IApiRequestDecoratorService {
       translateParams: translateParams
     }
 
+    if (isNullOrUndefined(message.messageText)) {
+      return;
+    }
+
     if (customMessage?.status !== undefined) {
       message.status = customMessage.status;
+    } else if (!isSuccess) {
+      message.status = 'danger';
     }
 
     // if there is no custom message, we use api response message

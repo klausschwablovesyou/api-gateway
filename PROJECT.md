@@ -144,10 +144,10 @@ Jelszó szabályok: min 6 karakter, nagybetű, kisbetű, szám, speciális karak
 
 | Végpont | Leírás |
 |---------|--------|
-| `POST /` | IP hozzáadása + `ip addr add <ip>/32 dev <iface>` |
+| `POST /` | IP hozzáadása + `ip addr add <ip>/32 dev <iface>` (IPv6: `/128`) |
 | `GET /` | Lista |
 | `PUT /:id` | Módosítás + régi eltávolítás, új hozzáadás |
-| `DELETE /:id` | Törlés + `ip addr del <ip>/32 dev <iface>` |
+| `DELETE /:id` | Törlés + `ip addr del <ip>/32 dev <iface>` (IPv6: `/128`) |
 | `POST /sync` | Az összes DB-beli IP újraszinkronizálása (ugyanaz, mint induláskor) + visszaellenőrzés |
 
 **IpSyncService** — induláskor (`SYNC_IPS_ON_STARTUP=true`) az összes DB-beli IP-t hozzáadja a hálózati interfészhez. Ugyanez futtatható bármikor a `POST /api/ip-manager/sync` végponttal (IP-k oldal → „Újraszinkronizálás" gomb).
@@ -212,7 +212,7 @@ Broadcast metódusok:
 
 ### IpSyncService
 - Platform detektálás (`Deno.build.os === 'windows'`)
-- Linux: `ip addr add/del <ip>/32 dev <iface>`
+- Linux: `ip addr add/del <ip>/32 dev <iface>` (IPv6: `/128`)
 - Windows: `netsh interface ip add/delete address`
 - "Already exists" / "Already removed" hibák gracefully kezelve
 

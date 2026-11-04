@@ -7,6 +7,7 @@ import { RealtimeTopic } from '@shared/types/realtime-topic';
 export class RealtimeService {
   private _socket: WebSocket | null = null;
   private _listeners: Map<RealtimeTopic, Set<(data: any) => void>> = new Map();
+  private _reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
   public isConnected = signal(false);
 
@@ -31,10 +32,14 @@ export class RealtimeService {
       this.isConnected.set(true);
     };
 
-    this._socket.onclose = () => {
+    this._socket.onclose = (closeEvent) => {
       console.log('[Realtime] Disconnected');
       this.isConnected.set(false);
-      this.reconnect();
+
+      // The server rejected the token (4001: missing, 4002: invalid or expired); retrying cannot succeed.
+      if (closeEvent.code !== 4001 && closeEvent.code !== 4002) {
+        this.reconnect();
+      }
     };
 
     this._socket.onerror = (error) => {
@@ -52,10 +57,18 @@ export class RealtimeService {
   }
 
   public disconnect(): void {
+    if (this._reconnectTimer !== null) {
+      clearTimeout(this._reconnectTimer);
+      this._reconnectTimer = null;
+    }
+
     if (this._socket) {
+      this._socket.onclose = null;
       this._socket.close();
       this._socket = null;
     }
+
+    this.isConnected.set(false);
   }
 
   public on(topic: RealtimeTopic, callback: (data: any) => void): () => void {
@@ -78,7 +91,8 @@ export class RealtimeService {
   }
 
   private reconnect(): void {
-    setTimeout(() => {
+    this._reconnectTimer = setTimeout(() => {
+      this._reconnectTimer = null;
       console.log('[Realtime] Reconnecting...');
       this.connect();
     }, 3000);

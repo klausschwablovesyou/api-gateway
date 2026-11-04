@@ -77,6 +77,7 @@ export class AuthService {
     });
 
     const token = await this.jwtService.generateToken(user.id, user.userRole, user.email);
+    user.password = '';
 
     return {
       token,
